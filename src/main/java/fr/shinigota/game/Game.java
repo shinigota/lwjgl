@@ -5,8 +5,6 @@ import fr.shinigota.engine.Window;
 import fr.shinigota.engine.entity.GameItem;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.Mesh;
-import fr.shinigota.engine.graphic.texture.Texture;
-import fr.shinigota.engine.graphic.texture.TextureSheet;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -17,21 +15,21 @@ import java.util.List;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Game implements IGameLogic {
-    private static final float CAMERA_POS_STEP = .2f;
     private static final float MOUSE_SENSITIVITY = .3f;
+    public static final int HEIGHT = 720;
+    public static final int WIDTH = 1280;
     private final Renderer renderer;
-    private final Vector3f cameraDelta;
     private final Camera camera;
     private final List<GameItem> gameItems;
     private final Controller controller;
     private GameTexture gameTexture;
 
-    public Game(Controller controller) throws IOException {
-        renderer = new Renderer();
-        cameraDelta = new Vector3f();
+    public Game(Renderer renderer, Controller controller) throws IOException {
+        this.renderer = renderer;
         camera = new Camera();
         gameItems = new ArrayList<>();
         this.controller = controller;
+        controller.setCamera(camera);
 
     }
 
@@ -41,71 +39,47 @@ public class Game implements IGameLogic {
         gameTexture = new GameTexture();
 
         Mesh cubeMesh = Mesh.FACTORY.cubeMesh(gameTexture.GRASS);
+        Mesh cubeMesh2 = Mesh.FACTORY.cubeMesh(gameTexture.DIRT);
 
-        GameItem gameItem = new GameItem(cubeMesh);
+        GameItem gameItem = new GameItem(cubeMesh2);
         gameItem.setPosition(0, 0, -2f);
         gameItems.add(gameItem);
 
-        GameItem gameItem2 = new GameItem(cubeMesh);
+        GameItem gameItem2 = new GameItem(cubeMesh2);
         gameItem2.setPosition(-1, 0, -2f);
         gameItems.add(gameItem2);
 
-        GameItem gameItem3 = new GameItem(cubeMesh);
+        GameItem gameItem6 = new GameItem(cubeMesh);
+        gameItem6.setPosition(0, 0, -3f);
+        gameItems.add(gameItem6);
+
+        GameItem gameItem5 = new GameItem(cubeMesh);
+        gameItem5.setPosition(-1, 0, -3f);
+        gameItems.add(gameItem5);
+
+        GameItem gameItem3 = new GameItem(cubeMesh2);
         gameItem3.setPosition(0, 1, -3f);
         gameItems.add(gameItem3);
 
-        GameItem gameItem4 = new GameItem(cubeMesh);
+        GameItem gameItem4 = new GameItem(cubeMesh2);
         gameItem4.setPosition(-1, 1, -3f);
         gameItems.add(gameItem4);
 
     }
 
     @Override
-    public void input(Window window) {
-        cameraDelta.set(0, 0, 0);
-        if (window.isKeyPressed(GLFW_KEY_W)) {
-            cameraDelta.z = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_S)) {
-            cameraDelta.z = 1;
-        }
-        if (window.isKeyPressed(GLFW_KEY_A)) {
-            cameraDelta.x = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_D)) {
-            cameraDelta.x = 1;
-        }
-        if (window.isKeyPressed(GLFW_KEY_Z)) {
-            cameraDelta.y = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_X)) {
-            cameraDelta.y = 1;
-        }
-    }
-
-    @Override
     public void update(float interval) {
-        // Update camera position
-        camera.movePosition(cameraDelta.x * CAMERA_POS_STEP,
-                cameraDelta.y * CAMERA_POS_STEP,
-                cameraDelta.z * CAMERA_POS_STEP);
-//
-//        // Update camera based on mouse
-////        if (controller.isRightButtonPressed()) {
-//            Vector2f rotVec = controller.getDisplVec();
-//            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
-//        }
-
-        Vector2f rotVec = controller.getDisplVec();
-        camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
-        System.out.println();
-        controller.getDisplVec().set(0,0);
-
-//        Vector3f camDeltaCpy = new Vector3f(cameraDelta);
-////        Vector3f rotVecCpy = new Vector3f(rotVec.x, rotVec.y, 0).normalize();
-////        camDeltaCpy.mul(rotVecCpy);
-////        camera.movePosition(camDeltaCpy.x * CAMERA_POS_STEP,
-////                camDeltaCpy.y * CAMERA_POS_STEP,
-////                camDeltaCpy.z * CAMERA_POS_STEP);
-
-
+        if (controller.isKeyPressed(GLFW_KEY_W)) {
+            camera.moveToDirection(Camera.Direction.FORWARD);
+        }
+        if (controller.isKeyPressed(GLFW_KEY_S)) {
+            camera.moveToDirection(Camera.Direction.BACKWARD);
+        }
+        if (controller.isKeyPressed(GLFW_KEY_A)) {
+            camera.moveToDirection(Camera.Direction.LEFT);
+        } if (controller.isKeyPressed(GLFW_KEY_D)) {
+            camera.moveToDirection(Camera.Direction.RIGHT);
+        }
     }
 
     @Override
@@ -121,7 +95,6 @@ public class Game implements IGameLogic {
                 gameItem.cleanup();
             }
         }
-
     }
 
     @Override

@@ -4,15 +4,19 @@ import fr.shinigota.engine.GameEngine;
 import fr.shinigota.engine.IGameLogic;
 import fr.shinigota.game.Controller;
 import fr.shinigota.game.Game;
+import fr.shinigota.game.Renderer;
 
 public class Main {
 
     public static void main(String[] args) {
         try {
             boolean vSync = true;
+
             Controller gameController = new Controller();
-            IGameLogic gameLogic = new Game(gameController);
-            GameEngine gameEng = new GameEngine("Game", 1280, 720, vSync, gameLogic);
+            Renderer renderer = new Renderer(gameController);
+            Game gameLogic = new Game(renderer, gameController);
+
+            GameEngine gameEng = new GameEngine("Game", Game.WIDTH, Game.HEIGHT, vSync, gameLogic);
             gameEng.setInputProcessor(gameController);
             gameEng.start();
         } catch (Exception e) {

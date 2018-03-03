@@ -3,6 +3,8 @@ package fr.shinigota.engine;
 import static org.lwjgl.glfw.GLFW.*;
 
 import fr.shinigota.engine.input.IInputProcessor;
+import fr.shinigota.engine.input.KeyboardInput;
+import fr.shinigota.engine.input.MouseInput;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -19,12 +21,18 @@ public class Window {
     private boolean resized;
     private boolean vSync;
 
+    private final MouseInput mouseInput;
+    private final KeyboardInput keyboardInput;
+
     public Window(String title, int width, int height, boolean vSync) {
         this.title = title;
         this.width = width;
         this.height = height;
         this.vSync = vSync;
         this.resized = false;
+
+        mouseInput = new MouseInput();
+        keyboardInput = new KeyboardInput();
     }
 
     public void init(GameEngine gameEngine) {
@@ -87,6 +95,8 @@ public class Window {
             glfwSwapInterval(1);
         }
 
+        glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
         // Make the window visible
         glfwShowWindow(windowHandle);
 
@@ -96,6 +106,9 @@ public class Window {
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+        mouseInput.init(this);
+        keyboardInput.init(this);
     }
 
     public void setClearColor(float r, float g, float b, float alpha) {
@@ -141,6 +154,7 @@ public class Window {
     public void update() {
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
+        mouseInput.update();
     }
 
     public long getWindowHandle() {

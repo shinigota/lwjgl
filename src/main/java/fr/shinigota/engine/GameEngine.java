@@ -1,6 +1,7 @@
 package fr.shinigota.engine;
 
 import fr.shinigota.engine.input.IInputProcessor;
+import fr.shinigota.engine.input.KeyboardInput;
 import fr.shinigota.engine.input.MouseInput;
 
 public class GameEngine implements Runnable {
@@ -11,15 +12,12 @@ public class GameEngine implements Runnable {
     private final Thread gameLoopThread;
     private final Timer timer;
     private final IGameLogic gameLogic;
-    private final MouseInput mouseInput;
-    private IInputProcessor inputProcessor;
 
     public GameEngine(String windowTitle, int width, int height, boolean vSync, IGameLogic gameLogic) throws Exception {
         gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
         window = new Window(windowTitle, width, height, vSync);
         this.gameLogic = gameLogic;
         timer = new Timer();
-        mouseInput = new MouseInput();
     }
 
     public void start() {
@@ -47,14 +45,13 @@ public class GameEngine implements Runnable {
         gameLogic.cleanup();
     }
 
-    protected void init() throws Exception {
+    private void init() throws Exception {
         window.init(this);
         timer.init();
         gameLogic.init(window);
-        mouseInput.init(window);
     }
 
-    protected void gameLoop() {
+    private void gameLoop() {
         float elapsedTime;
         float accumulator = 0f;
         float interval = 1f / TARGET_UPS;
@@ -63,8 +60,6 @@ public class GameEngine implements Runnable {
         while (running && !window.windowShouldClose()) {
             elapsedTime = timer.getElapsedTime();
             accumulator += elapsedTime;
-
-            input();
 
             while (accumulator >= interval) {
                 update(interval);
@@ -90,15 +85,11 @@ public class GameEngine implements Runnable {
         }
     }
 
-    protected void input() {
-        gameLogic.input(window);
-    }
-
-    protected void update(float interval) {
+    private void update(float interval) {
         gameLogic.update(interval);
     }
 
-    protected void render() {
+    private void render() {
         gameLogic.render(window);
         window.update();
     }

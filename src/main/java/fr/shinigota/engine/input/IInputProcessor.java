@@ -5,4 +5,7 @@ public interface IInputProcessor {
     void mouseEntered();
     void mouseLeaved();
     void mouseClick(int button, int type);
+    void onKeyPress(int key);
+    void onKeyRelease(int key);
+    void onKeyHold(int key);
 }

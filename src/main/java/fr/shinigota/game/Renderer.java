@@ -14,16 +14,19 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
-    private static final float FOV = (float) Math.toRadians(60.0f);
+    private static final float FOV = (float) Math.toRadians(70.0f);
     private static final float Z_NEAR = 0.01f;
     private static final float Z_FAR = 1000.f;
     private final Transformation transformation;
+    private final Controller controller;
 
     private Matrix4f projectionMatrix;
     private ShaderProgram shaderProgram;
 
-    public Renderer() {
+
+    public Renderer(Controller controller) {
         transformation = new Transformation();
+        this.controller = controller;
     }
 
 
@@ -37,6 +40,8 @@ public class Renderer {
 //        shaderProgram.createUniform("worldMatrix");
         shaderProgram.createUniform("texture_sampler");
         shaderProgram.createUniform("modelWorldMatrix");
+
+        window.setInputProcessor(controller);
     }
 
     public void render(Window window, Camera camera, List<GameItem> gameItems) {
