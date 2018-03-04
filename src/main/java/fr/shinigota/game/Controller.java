@@ -9,7 +9,7 @@ import java.util.Map;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Controller implements IInputProcessor {
-    private static final float MOUSE_SENSITIVITY = .3f;
+    private static final float MOUSE_SENSITIVITY = .9f;
 
     private final Vector2d previousRotation;
     private final Map<Integer, Boolean> pressedKeys = new HashMap<>();

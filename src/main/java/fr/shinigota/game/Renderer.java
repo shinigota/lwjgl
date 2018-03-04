@@ -11,6 +11,7 @@ import org.joml.Matrix4f;
 
 import java.util.List;
 
+import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
