@@ -5,6 +5,7 @@ import fr.shinigota.engine.Utils;
 import fr.shinigota.engine.Window;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.ShaderProgram;
+import fr.shinigota.engine.graphic.Skybox;
 import fr.shinigota.engine.graphic.Transformation;
 import fr.shinigota.engine.graphic.texture.TextureSheet;
 import org.joml.Matrix4f;
@@ -44,7 +45,7 @@ public class Renderer {
         window.setInputProcessor(controller);
     }
 
-    public void render(Window window, Camera camera, List<GameItem> gameItems) {
+    public void render(Window window, Camera camera, List<GameItem> gameItems, Skybox skybox) {
         clear();
 
         if (window.isResized()) {
@@ -55,6 +56,8 @@ public class Renderer {
         shaderProgram.bind();
 
         shaderProgram.setUniform("texture_sampler", 0);
+
+        renderSkybox(skybox);
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
@@ -71,6 +74,19 @@ public class Renderer {
         }
 
         shaderProgram.unbind();
+    }
+
+    private void renderSkybox(Skybox skybox) {
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix();
+        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
+        Matrix4f viewMatrix = transformation.getViewMatrix();
+        viewMatrix.m30(0);
+        viewMatrix.m31(0);
+        viewMatrix.m32(0);
+        Matrix4f modelViewMatrix = transformation.getModelView(skybox, viewMatrix);
+        shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
+        skybox.getMesh().render();
+
     }
 
     public void clear() {

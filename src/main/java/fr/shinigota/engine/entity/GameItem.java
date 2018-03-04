@@ -4,16 +4,19 @@ import fr.shinigota.engine.graphic.Mesh;
 import org.joml.Vector3f;
 
 public class GameItem {
-    private final Mesh mesh;
     private final Vector3f position;
     private final Vector3f rotation;
     private float scale;
+    private Mesh mesh;
 
-    public GameItem(Mesh mesh) {
-        this.mesh = mesh;
+    public GameItem() {
         position = new Vector3f(0, 0, 0);
         scale = 1;
         rotation = new Vector3f(0, 0, 0);
+    }
+    public GameItem(Mesh mesh) {
+        this();
+        this.mesh = mesh;
     }
 
     public Vector3f getPosition() {
@@ -42,6 +45,10 @@ public class GameItem {
         rotation.x = x;
         rotation.y = y;
         rotation.z = z;
+    }
+
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
     }
 
     public Mesh getMesh() {

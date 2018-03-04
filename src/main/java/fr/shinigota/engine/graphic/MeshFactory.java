@@ -107,6 +107,9 @@ public class MeshFactory {
                 // Back face
                 4, 6, 7, 5, 4, 7,
         };
-        return new Mesh(positions, indices, textCoords, texture);
+        Mesh mesh = new Mesh(positions, indices, textCoords);
+        mesh.setTexture(texture);
+
+        return mesh;
     }
 }

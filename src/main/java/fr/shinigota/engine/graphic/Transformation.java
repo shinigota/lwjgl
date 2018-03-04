@@ -17,6 +17,10 @@ public class Transformation {
         modelViewMatrix = new Matrix4f();
     }
 
+    public final Matrix4f getProjectionMatrix() {
+        return projectionMatrix;
+    }
+
     public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
         float aspectRatio = width / height;
         projectionMatrix.identity();
@@ -43,6 +47,10 @@ public class Transformation {
                 scale(gameItem.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
+    }
+
+    public Matrix4f getViewMatrix() {
+        return viewMatrix;
     }
 
     public Matrix4f getViewMatrix(Camera camera) {

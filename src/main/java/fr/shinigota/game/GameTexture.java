@@ -11,14 +11,16 @@ public class GameTexture {
 
     public final Texture GRASS;
     public final Texture DIRT;
+    public final Texture SKY;
 
     private final TextureSheet textureSheet;
 
     public GameTexture() throws IOException {
-        textureSheet = new TextureSheet("/textures/grassblock.png");
+        textureSheet = new TextureSheet("/textures/spritesheet.png");
 
         GRASS = new Texture(textureSheet,1024, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         DIRT = new Texture(textureSheet,0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        SKY = new Texture(textureSheet,0, 1024, TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     public void cleanup() {

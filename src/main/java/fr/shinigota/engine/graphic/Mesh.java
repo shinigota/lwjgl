@@ -27,14 +27,13 @@ public class Mesh {
 
     private final int vertexCount;
 
-    private final Texture texture;
+    private Texture texture;
 
-    public Mesh(float[] positions, int[] indices, float[] textCoords, Texture texture) {
+    public Mesh(float[] positions, int[] indices, float[] textCoords) {
         vboIds = new ArrayList<>();
         FloatBuffer posBuffer = null;
         IntBuffer indicesBuffer = null;
         FloatBuffer textCoordsBuffer = null;
-        this.texture = texture;
 
         try {
             vertexCount = indices.length;
@@ -89,6 +88,10 @@ public class Mesh {
 
     public int getVertexCount() {
         return vertexCount;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
     }
 
     public void cleanup() {

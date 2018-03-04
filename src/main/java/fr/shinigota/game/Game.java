@@ -5,6 +5,7 @@ import fr.shinigota.engine.Window;
 import fr.shinigota.engine.entity.GameItem;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.Mesh;
+import fr.shinigota.engine.graphic.Skybox;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,9 +22,11 @@ public class Game implements IGameLogic {
     private final Renderer renderer;
     private final Camera camera;
     private final List<GameItem> gameItems;
+
     private final Controller controller;
 
-    public Game(Renderer renderer, Controller controller) throws IOException {
+    private Skybox skybox;
+    public Game(Renderer renderer, Controller controller) throws Exception {
         this.renderer = renderer;
         camera = new Camera();
         gameItems = new ArrayList<>();
@@ -62,6 +65,8 @@ public class Game implements IGameLogic {
         gameItem4.setPosition(-1, 1, -3f);
         gameItems.add(gameItem4);
 
+        skybox = new Skybox(gameTexture.SKY);
+
     }
 
     @Override
@@ -83,7 +88,7 @@ public class Game implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(window, camera, gameItems);
+        renderer.render(window, camera, gameItems, skybox);
     }
 
     @Override
