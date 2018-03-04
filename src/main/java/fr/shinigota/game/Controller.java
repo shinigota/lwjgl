@@ -1,6 +1,5 @@
 package fr.shinigota.game;
 
-import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.input.IInputProcessor;
 import org.joml.Vector2d;
 
@@ -10,13 +9,13 @@ import java.util.Map;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Controller implements IInputProcessor {
-    private static final float MOUSE_SENSITIVITY = .1f;
+    private static final float MOUSE_SENSITIVITY = .3f;
 
     private final Vector2d previousRotation;
     private final Map<Integer, Boolean> pressedKeys = new HashMap<>();
 
-    private Camera camera;
-
+    private float cameraYaw = 0;
+    private float cameraPitch = 0;
 
     public Controller() {
         previousRotation = new Vector2d(Game.WIDTH/2, Game.HEIGHT/2);
@@ -25,30 +24,26 @@ public class Controller implements IInputProcessor {
         pressedKeys.put(GLFW_KEY_A, false);
         pressedKeys.put(GLFW_KEY_S, false);
         pressedKeys.put(GLFW_KEY_D, false);
+
+        cameraPitch = 0;
+        cameraYaw = 0;
     }
 
     @Override
     public void mouseMoved(double x, double y) {
-        float pitch = 0;
-        float yaw = 0;
-
         double deltax = x - previousRotation.x;
         double deltay = y - previousRotation.y;
         boolean doesYaw = deltax != 0;
         boolean doesPitch = deltay != 0;
         if (doesYaw) {
-            yaw = (float) deltax;
+            cameraYaw = (float) deltax * MOUSE_SENSITIVITY;
         }
         if (doesPitch) {
-            pitch = (float) deltay;
+            cameraPitch = (float) deltay * MOUSE_SENSITIVITY;
         }
 
         previousRotation.x = x;
         previousRotation.y = y;
-
-        if(camera != null) {
-            camera.moveRotation(pitch * MOUSE_SENSITIVITY, yaw * MOUSE_SENSITIVITY);
-        }
     }
 
     @Override
@@ -84,8 +79,16 @@ public class Controller implements IInputProcessor {
 
     }
 
-    public void setCamera(Camera camera) {
-        this.camera = camera;
+    public float consumeCameraPitch() {
+        float tmp = cameraPitch;
+        cameraPitch = 0;
+        return tmp;
+    }
+
+    public float consumeCameraYaw() {
+        float tmp = cameraYaw;
+        cameraYaw = 0;
+        return tmp;
     }
 
     public boolean isKeyPressed(int key) {

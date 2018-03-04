@@ -5,8 +5,6 @@ import fr.shinigota.engine.Window;
 import fr.shinigota.engine.entity.GameItem;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.Mesh;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,28 +13,27 @@ import java.util.List;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Game implements IGameLogic {
-    private static final float MOUSE_SENSITIVITY = .3f;
     public static final int HEIGHT = 720;
     public static final int WIDTH = 1280;
+
+    private static final float MOUSE_SENSITIVITY = .3f;
+
     private final Renderer renderer;
     private final Camera camera;
     private final List<GameItem> gameItems;
     private final Controller controller;
-    private GameTexture gameTexture;
 
     public Game(Renderer renderer, Controller controller) throws IOException {
         this.renderer = renderer;
         camera = new Camera();
         gameItems = new ArrayList<>();
         this.controller = controller;
-        controller.setCamera(camera);
-
     }
 
     @Override
     public void init(Window window) throws Exception {
         renderer.init(window);
-        gameTexture = new GameTexture();
+        GameTexture gameTexture = new GameTexture();
 
         Mesh cubeMesh = Mesh.FACTORY.cubeMesh(gameTexture.GRASS);
         Mesh cubeMesh2 = Mesh.FACTORY.cubeMesh(gameTexture.DIRT);
@@ -69,6 +66,8 @@ public class Game implements IGameLogic {
 
     @Override
     public void update(float interval) {
+        camera.moveRotation(controller.consumeCameraPitch(), controller.consumeCameraYaw());
+
         if (controller.isKeyPressed(GLFW_KEY_W)) {
             camera.moveToDirection(Camera.Direction.FORWARD);
         }

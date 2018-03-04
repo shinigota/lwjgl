@@ -45,11 +45,6 @@ public class MouseInput {
         });
     }
 
-    public void update() {
-
-
-    }
-
     private void mouseMoved(double x, double y) {
         inputProcessor.mouseMoved(x, y);
     }

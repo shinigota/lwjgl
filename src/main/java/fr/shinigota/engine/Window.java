@@ -154,7 +154,6 @@ public class Window {
     public void update() {
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
-        mouseInput.update();
     }
 
     public long getWindowHandle() {
