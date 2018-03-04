@@ -1,22 +1,15 @@
 package fr.shinigota.engine.input;
 
 import fr.shinigota.engine.Window;
-import fr.shinigota.game.Controller;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-
-import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseInput {
 
     private IInputProcessor inputProcessor;
-    private Window window;
 
     public void init(Window window) {
-        this.window = window;
-        glfwSetCursorPos(window.getWindowHandle(), window.getWidth() / 2, window.getHeight() / 2);
+        glfwSetCursorPos(window.getWindowHandle(), ((double) window.getWidth()) / 2, ((double) window.getHeight()) / 2);
         inputProcessor = window.getInputProcessor();
 
         glfwSetCursorPosCallback(window.getWindowHandle(),(windowHandle, xpos, ypos) -> {

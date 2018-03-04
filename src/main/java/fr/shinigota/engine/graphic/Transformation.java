@@ -28,7 +28,7 @@ public class Transformation {
         return projectionMatrix;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, float scale) {
         worldMatrix.identity().translate(offset)
                 .rotateX((float)Math.toRadians(rotation.x))

@@ -1,6 +1,5 @@
 package fr.shinigota.engine.graphic;
 
-import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
 /**
@@ -25,7 +24,6 @@ public class Camera {
     private final Vector3f rotation;
 
     private Vector3f front;
-    private Vector3f up;
     private Vector3f right;
 
     public Camera() {
@@ -37,7 +35,6 @@ public class Camera {
         this.rotation = rotation;
 
         front = new Vector3f(0, 0, -1);
-        up = new Vector3f(0, 1, 0);
 
         updateCameraVectors();
     }

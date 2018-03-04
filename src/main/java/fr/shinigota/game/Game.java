@@ -7,7 +7,6 @@ import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.Mesh;
 import fr.shinigota.engine.graphic.Skybox;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +16,6 @@ public class Game implements IGameLogic {
     public static final int HEIGHT = 720;
     public static final int WIDTH = 1280;
 
-    private static final float MOUSE_SENSITIVITY = .3f;
-
     private final Renderer renderer;
     private final Camera camera;
     private final List<GameItem> gameItems;
@@ -26,7 +23,7 @@ public class Game implements IGameLogic {
     private final Controller controller;
 
     private Skybox skybox;
-    public Game(Renderer renderer, Controller controller) throws Exception {
+    public Game(Renderer renderer, Controller controller) {
         this.renderer = renderer;
         camera = new Camera();
         gameItems = new ArrayList<>();
@@ -38,8 +35,8 @@ public class Game implements IGameLogic {
         renderer.init(window);
         GameTexture gameTexture = new GameTexture();
 
-        Mesh cubeMesh = Mesh.FACTORY.cubeMesh(gameTexture.GRASS);
-        Mesh cubeMesh2 = Mesh.FACTORY.cubeMesh(gameTexture.DIRT);
+        Mesh cubeMesh = Mesh.FACTORY.cubeMesh(gameTexture.grass);
+        Mesh cubeMesh2 = Mesh.FACTORY.cubeMesh(gameTexture.dirt);
 
         GameItem gameItem = new GameItem(cubeMesh2);
         gameItem.setPosition(0, 0, -2f);
@@ -65,7 +62,7 @@ public class Game implements IGameLogic {
         gameItem4.setPosition(-1, 1, -3f);
         gameItems.add(gameItem4);
 
-        skybox = new Skybox(gameTexture.SKY);
+        skybox = new Skybox(gameTexture.sky);
 
     }
 
@@ -81,7 +78,8 @@ public class Game implements IGameLogic {
         }
         if (controller.isKeyPressed(GLFW_KEY_A)) {
             camera.moveToDirection(Camera.Direction.LEFT);
-        } if (controller.isKeyPressed(GLFW_KEY_D)) {
+        }
+        if (controller.isKeyPressed(GLFW_KEY_D)) {
             camera.moveToDirection(Camera.Direction.RIGHT);
         }
     }

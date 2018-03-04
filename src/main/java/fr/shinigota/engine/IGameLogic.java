@@ -1,9 +1,5 @@
 package fr.shinigota.engine;
 
-import fr.shinigota.engine.input.IInputProcessor;
-import fr.shinigota.engine.input.MouseInput;
-import fr.shinigota.game.Controller;
-
 public interface IGameLogic {
     void init(Window window) throws Exception;
     void update(float interval);

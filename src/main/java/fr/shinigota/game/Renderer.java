@@ -1,13 +1,12 @@
 package fr.shinigota.game;
 
-import fr.shinigota.engine.entity.GameItem;
 import fr.shinigota.engine.Utils;
 import fr.shinigota.engine.Window;
+import fr.shinigota.engine.entity.GameItem;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.ShaderProgram;
 import fr.shinigota.engine.graphic.Skybox;
 import fr.shinigota.engine.graphic.Transformation;
-import fr.shinigota.engine.graphic.texture.TextureSheet;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class Renderer {
     private final Transformation transformation;
     private final Controller controller;
 
-    private Matrix4f projectionMatrix;
     private ShaderProgram shaderProgram;
 
 
@@ -38,7 +36,6 @@ public class Renderer {
         shaderProgram.link();
 
         shaderProgram.createUniform("projectionMatrix");
-//        shaderProgram.createUniform("worldMatrix");
         shaderProgram.createUniform("texture_sampler");
         shaderProgram.createUniform("modelWorldMatrix");
 
@@ -77,14 +74,14 @@ public class Renderer {
     }
 
     private void renderSkybox(Skybox skybox) {
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix();
-        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
-        Matrix4f viewMatrix = transformation.getViewMatrix();
-        viewMatrix.m30(0);
-        viewMatrix.m31(0);
-        viewMatrix.m32(0);
-        Matrix4f modelViewMatrix = transformation.getModelView(skybox, viewMatrix);
-        shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
+        Matrix4f tmpProjectionMatrix = transformation.getProjectionMatrix();
+        shaderProgram.setUniform("projectionMatrix", tmpProjectionMatrix);
+        Matrix4f tmpViewMatrix = transformation.getViewMatrix();
+        tmpViewMatrix.m30(0);
+        tmpViewMatrix.m31(0);
+        tmpViewMatrix.m32(0);
+        Matrix4f tmpModelViewMatrix = transformation.getModelView(skybox, tmpViewMatrix);
+        shaderProgram.setUniform("modelWorldMatrix", tmpModelViewMatrix);
         skybox.getMesh().render();
 
     }
@@ -102,8 +99,8 @@ public class Renderer {
     public void resize(Window window) throws Exception {
         if (shaderProgram != null) {
             float aspectRatio = (float) window.getWidth() / window.getHeight();
-            projectionMatrix = new Matrix4f().perspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
-            shaderProgram.createUniform("projectionMatrix");
+            Matrix4f projectionMatrix = new Matrix4f().perspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
+            shaderProgram.setUniform("projectionMatrix", projectionMatrix);
         }
     }
 }

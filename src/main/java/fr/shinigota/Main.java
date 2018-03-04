@@ -1,7 +1,6 @@
 package fr.shinigota;
 
 import fr.shinigota.engine.GameEngine;
-import fr.shinigota.engine.IGameLogic;
 import fr.shinigota.game.Controller;
 import fr.shinigota.game.Game;
 import fr.shinigota.game.Renderer;

@@ -6,10 +6,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class KeyboardInput {
     private IInputProcessor inputProcessor;
-    private Window window;
 
     public void init(Window window) {
-        this.window = window;
         inputProcessor = window.getInputProcessor();
 
         glfwSetKeyCallback(window.getWindowHandle(), (window1, key, scancode, action, mods) -> {
