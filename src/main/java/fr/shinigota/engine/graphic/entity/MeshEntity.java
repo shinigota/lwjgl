@@ -1,22 +1,28 @@
-package fr.shinigota.engine.entity;
+package fr.shinigota.engine.graphic.entity;
 
-import fr.shinigota.engine.graphic.Mesh;
+import fr.shinigota.engine.graphic.mesh.Mesh;
 import org.joml.Vector3f;
 
-public class GameItem {
+public class MeshEntity {
     private final Vector3f position;
     private final Vector3f rotation;
     private float scale;
     private Mesh mesh;
 
-    public GameItem() {
-        position = new Vector3f(0, 0, 0);
-        scale = 1;
-        rotation = new Vector3f(0, 0, 0);
+    public MeshEntity() {
+        this(null);
     }
-    public GameItem(Mesh mesh) {
-        this();
+
+    public MeshEntity(Mesh mesh) {
+        this(mesh, 0, 0, 0);
         this.mesh = mesh;
+    }
+
+    public MeshEntity(Mesh mesh, float x, float y, float z) {
+        this.mesh = mesh;
+        scale = 1;
+        position = new Vector3f(x, y, z);
+        rotation = new Vector3f(0, 0, 0);
     }
 
     public Vector3f getPosition() {

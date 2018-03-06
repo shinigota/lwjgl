@@ -15,7 +15,7 @@ public class KeyboardInput {
                 return;
             }
 
-            if( action == GLFW_PRESS) {
+            if (action == GLFW_PRESS) {
                 KeyboardInput.this.onKeyPress(key);
             } else if( action == GLFW_RELEASE) {
                 KeyboardInput.this.onKeyReleased(key);

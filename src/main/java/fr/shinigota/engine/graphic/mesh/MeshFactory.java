@@ -1,14 +1,28 @@
-package fr.shinigota.engine.graphic;
+package fr.shinigota.engine.graphic.mesh;
 
-import fr.shinigota.engine.graphic.texture.Texture;
+import fr.shinigota.engine.graphic.texture.CubeTexture;
 
 public class MeshFactory {
 
-    public Mesh cubeMesh(Texture texture) {
-        float tx = texture.getX();
-        float ty = texture.getY();
-        float tw = texture.getWidth();
-        float th = texture.getHeight();
+    public Mesh cubeMesh(CubeTexture cubeTexture) {
+
+        // Side properties
+        float sx = cubeTexture.getSide().getX();
+        float sy = cubeTexture.getSide().getY();
+        float sw = cubeTexture.getSide().getWidth();
+        float sh = cubeTexture.getSide().getHeight();
+
+        // Up properties
+        float ux = cubeTexture.getUp().getX();
+        float uy = cubeTexture.getUp().getY();
+        float uw = cubeTexture.getUp().getWidth();
+        float uh = cubeTexture.getUp().getHeight();
+
+        // Down properties
+        float dx = cubeTexture.getDown().getX();
+        float dy = cubeTexture.getDown().getY();
+        float dw = cubeTexture.getDown().getWidth();
+        float dh = cubeTexture.getDown().getHeight();
 
         // Create the Mesh
         float[] positions = new float[] {
@@ -62,35 +76,41 @@ public class MeshFactory {
                 0.5f, -0.5f, 0.5f,
         };
         float[] textCoords = new float[]{
-                tx,         ty,
-                tx,         ty + th,
-                tx + tw,    ty + th,
-                tx + tw,    ty,
+                // front
+                sx,         sy,             // 0
+                sx,         sy + sh,        // 1
+                sx + sw,    sy + sh,        // 2
+                sx + sw,    sy,             // 3
 
-                tx,         ty,
-                tx + tw,    ty,
-                tx,         ty + th,
-                tx + tw,    ty + th,
+                // back
+                sx,         sy,             // 4
+                sx + sw,    sy,             // 5
+                sx,         sy + sh,        // 6
+                sx + sw,    sy + sh,        // 7
 
-                // For text coords in top face
-                tx,         ty + th,
-                tx + tw,    ty + th,
-                tx,         ty + 2*th,
-                tx + tw,    ty + 2*th,
+                // top
+                ux,         uy,        // 8
+                ux + uw,    uy,        // 9
+                ux,         uy + uh,      // 10
+                ux + uw,    uy + uh,      // 11
 
-                // For text coords in right face
-                tx,         ty,
-                tx,         ty + th,
+                // right
+                sx,         sy,             // 12
+                                            // 5
+                sx,         sy + sh,        // 13
+                                            // 7
 
-                // For text coords in left face
-                tx + tw,    ty,
-                tx + tw,    ty + th,
+                // left
+                                            // 4
+                sx + sw,    sy,             // 14
+                                            // 6
+                sx + sw,    sy + sh,        // 15
 
-                // For text coords in bottom face
-                tx + tw,    ty,
-                tx + 2*tw,  ty,
-                tx + tw,    ty + th,
-                tx + 2*tw,  ty + th,
+                // bottom
+                dx,         dy,             // 16
+                dx + dw,    dy,             // 17
+                dx,         dy + dh,        // 18
+                dx + dw,    dy + dh,        // 19
         };
 
         int[] indices = new int[]{
@@ -108,7 +128,7 @@ public class MeshFactory {
                 4, 6, 7, 5, 4, 7,
         };
         Mesh mesh = new Mesh(positions, indices, textCoords);
-        mesh.setTexture(texture);
+        mesh.setTexture(cubeTexture.getTexture());
 
         return mesh;
     }

@@ -30,6 +30,10 @@ public class Camera {
         this(new Vector3f(0, 0, 0),  new Vector3f(0, 0, 0));
     }
 
+    public Camera(float x, float y, float z) {
+        this(new Vector3f(x, y, z),  new Vector3f(0, 0, 0));
+    }
+
     public Camera(Vector3f position, Vector3f rotation) {
         this.position = position;
         this.rotation = rotation;
@@ -92,5 +96,12 @@ public class Camera {
         if(direction == Direction.RIGHT) {
             position.add(new Vector3f(right).mul(velocity));
         }
+
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "Camera{ x:" + position.x + "; y:" + position.y + "; z:" + position.z + "}";
     }
 }

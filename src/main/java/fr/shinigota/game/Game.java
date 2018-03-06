@@ -2,11 +2,14 @@ package fr.shinigota.game;
 
 import fr.shinigota.engine.IGameLogic;
 import fr.shinigota.engine.Window;
-import fr.shinigota.engine.entity.GameItem;
+import fr.shinigota.engine.graphic.texture.CubeTexture;
+import fr.shinigota.engine.graphic.texture.Texture;
+import fr.shinigota.engine.graphic.entity.MeshEntity;
 import fr.shinigota.engine.graphic.Camera;
-import fr.shinigota.engine.graphic.Mesh;
 import fr.shinigota.engine.graphic.Skybox;
+import fr.shinigota.game.world.World;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,51 +21,40 @@ public class Game implements IGameLogic {
 
     private final Renderer renderer;
     private final Camera camera;
-    private final List<GameItem> gameItems;
+    private final List<MeshEntity> gameItems;
 
     private final Controller controller;
 
+    private World world;
+
+    private Texture skyboxTexture;
     private Skybox skybox;
-    public Game(Renderer renderer, Controller controller) {
+
+    public Game(Renderer renderer, Controller controller) throws IOException {
         this.renderer = renderer;
-        camera = new Camera();
+//        camera = new Camera(8, 9, 5);
+        camera = new Camera(8, 4, 30);
         gameItems = new ArrayList<>();
         this.controller = controller;
+
     }
 
     @Override
     public void init(Window window) throws Exception {
+        world = new World();
+        world.generate();
+
         renderer.init(window);
-        GameTexture gameTexture = new GameTexture();
 
-        Mesh cubeMesh = Mesh.FACTORY.cubeMesh(gameTexture.grass);
-        Mesh cubeMesh2 = Mesh.FACTORY.cubeMesh(gameTexture.dirt);
+        skyboxTexture = new Texture("/textures/skybox.png");
 
-        GameItem gameItem = new GameItem(cubeMesh2);
-        gameItem.setPosition(0, 0, -2f);
-        gameItems.add(gameItem);
+        CubeTexture skyboxCube = new CubeTexture
+                .CubeTextureBuilder(skyboxTexture, 32, 32, 0)
+                .down(32, 64, 0)
+                .up(32, 0, 0)
+                .build();
 
-        GameItem gameItem2 = new GameItem(cubeMesh2);
-        gameItem2.setPosition(-1, 0, -2f);
-        gameItems.add(gameItem2);
-
-        GameItem gameItem6 = new GameItem(cubeMesh);
-        gameItem6.setPosition(0, 0, -3f);
-        gameItems.add(gameItem6);
-
-        GameItem gameItem5 = new GameItem(cubeMesh);
-        gameItem5.setPosition(-1, 0, -3f);
-        gameItems.add(gameItem5);
-
-        GameItem gameItem3 = new GameItem(cubeMesh2);
-        gameItem3.setPosition(0, 1, -3f);
-        gameItems.add(gameItem3);
-
-        GameItem gameItem4 = new GameItem(cubeMesh2);
-        gameItem4.setPosition(-1, 1, -3f);
-        gameItems.add(gameItem4);
-
-        skybox = new Skybox(gameTexture.sky);
+        skybox = new Skybox(skyboxCube);
 
     }
 
@@ -86,17 +78,22 @@ public class Game implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(window, camera, gameItems, skybox);
+        renderer.render(window, camera, world.getMeshes(), skybox);
     }
 
     @Override
     public void cleanup() {
         renderer.cleanup();
-        if (gameItems != null) {
-            for (GameItem gameItem : gameItems) {
-                gameItem.cleanup();
-            }
+
+        for (MeshEntity mesh : gameItems) {
+            mesh.cleanup();
         }
+
+        if (skyboxTexture != null) {
+            skyboxTexture.cleanup();
+        }
+
+        world.cleanup();
     }
 
     @Override

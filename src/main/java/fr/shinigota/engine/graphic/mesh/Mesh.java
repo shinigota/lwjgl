@@ -1,6 +1,7 @@
-package fr.shinigota.engine.graphic;
+package fr.shinigota.engine.graphic.mesh;
 
 import fr.shinigota.engine.graphic.texture.Texture;
+import fr.shinigota.engine.graphic.texture.TextureRegion;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -17,6 +18,10 @@ import static org.lwjgl.opengl.GL30.*;
 public class Mesh {
     public static final MeshFactory FACTORY = new MeshFactory();
 
+    private final float[] positions;
+    private final float[] textCoords;
+    private final int[] indicies;
+
     /**
      * Verticies arrays object
      */
@@ -29,7 +34,13 @@ public class Mesh {
 
     private Texture texture;
 
+
     public Mesh(float[] positions, int[] indices, float[] textCoords) {
+
+        this.positions = positions;
+        this.textCoords = textCoords;
+        this.indicies = indices;
+
         vboIds = new ArrayList<>();
         FloatBuffer posBuffer = null;
         IntBuffer indicesBuffer = null;
@@ -82,6 +93,11 @@ public class Mesh {
         }
     }
 
+    public Mesh(float[] positions, int[] indices, float[] textCoords, Texture texture) {
+        this(positions, indices, textCoords);
+        this.texture = texture;
+    }
+
     public int getVaoId() {
         return vaoId;
     }
@@ -126,4 +142,17 @@ public class Mesh {
         glDisableVertexAttribArray(1);
         glBindVertexArray(0);
     }
+
+    public float[] getPositions() {
+        return positions;
+    }
+
+    public int[] getIndicies() {
+        return indicies;
+    }
+
+    public float[] getTextCoords() {
+        return textCoords;
+    }
+
 }

@@ -2,7 +2,7 @@ package fr.shinigota.game;
 
 import fr.shinigota.engine.Utils;
 import fr.shinigota.engine.Window;
-import fr.shinigota.engine.entity.GameItem;
+import fr.shinigota.engine.graphic.entity.MeshEntity;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.ShaderProgram;
 import fr.shinigota.engine.graphic.Skybox;
@@ -11,7 +11,6 @@ import org.joml.Matrix4f;
 
 import java.util.List;
 
-import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
@@ -43,7 +42,7 @@ public class Renderer {
         window.setInputProcessor(controller);
     }
 
-    public void render(Window window, Camera camera, List<GameItem> gameItems, Skybox skybox) {
+    public void render(Window window, Camera camera, List<MeshEntity> gameItems, Skybox skybox) {
         clear();
 
         if (window.isResized()) {
@@ -62,7 +61,10 @@ public class Renderer {
 
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         // Render each item
-        for (GameItem gameItem : gameItems) {
+        for (MeshEntity gameItem : gameItems) {
+            if (gameItem == null) {
+                continue;
+            }
             // Set world matrix for this item
             Matrix4f modelViewMatrix =
                     transformation.getModelView(gameItem, viewMatrix);

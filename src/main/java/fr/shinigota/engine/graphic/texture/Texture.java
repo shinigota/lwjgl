@@ -6,30 +6,18 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Texture {
+    private final int textureId;
     private final int width;
     private final int height;
 
-    private TextureSheet textureSheet;
-    private int x;
-    private int y;
-
-    private int textureId;
-
-    public Texture(TextureSheet textureSheet, int x, int y, int width, int height) {
-        this.textureSheet = textureSheet;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
     public Texture(String fileName) throws IOException {
         // Decode the texture
-        PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(fileName));
+        PNGDecoder decoder = new PNGDecoder(TextureRegion.class.getResourceAsStream(fileName));
         ByteBuffer buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
         decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
         buffer.flip();
@@ -58,48 +46,26 @@ public class Texture {
                 GL_UNSIGNED_BYTE, buffer);
 
         // Scale the texture
-//        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
-    public float getX() {
-        if (textureSheet == null) {
-            return 0;
-        }
-        return (float) x / textureSheet.getWidth();
-    }
-
-    public float getY() {
-        if (textureSheet == null) {
-            return 0;
-        }
-        return (float) y / textureSheet.getWidth();
-    }
-
-    public float getWidth() {
-        if (textureSheet == null) {
-            return width;
-        }
-        return (float) width / textureSheet.getWidth();
-    }
-
-    public float getHeight() {
-        if (textureSheet == null) {
-            return height;
-        }
-        return (float) height / textureSheet.getHeight();
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     public int getId() {
-        if (textureSheet == null) {
-            return textureId;
-        }
-        return textureSheet.getId();
+        return textureId;
     }
 
-    public void cleanup()  {
-        if (textureSheet == null) {
-            return;
-        }
+    public void cleanup() {
         glDeleteTextures(textureId);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public TextureRegion getTextureAt(int x, int y, int width, int height) {
+        return new TextureRegion(this, x, y, width, height);
     }
 }

@@ -1,6 +1,6 @@
 package fr.shinigota.engine.graphic;
 
-import fr.shinigota.engine.entity.GameItem;
+import fr.shinigota.engine.graphic.entity.MeshEntity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -38,7 +38,7 @@ public class Transformation {
         return worldMatrix;
     }
 
-    public Matrix4f getModelView(GameItem gameItem, Matrix4f viewMatrix) {
+    public Matrix4f getModelView(MeshEntity gameItem, Matrix4f viewMatrix) {
         Vector3f rotation = gameItem.getRotation();
         modelViewMatrix.identity().translate(gameItem.getPosition()).
                 rotateX((float)Math.toRadians(-rotation.x)).
