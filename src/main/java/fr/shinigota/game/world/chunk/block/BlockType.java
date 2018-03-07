@@ -10,7 +10,9 @@ public enum BlockType {
     DIRT(BlockAlpha.OPAQUE, 1, 0),
     GRASS(BlockAlpha.OPAQUE, 0, 0, 1, 0, 2, 0),
     SAND(BlockAlpha.OPAQUE, 1, 1),
-    STONE(BlockAlpha.OPAQUE, 0, 1);
+    STONE(BlockAlpha.OPAQUE, 0, 1),
+    TRUNK(BlockAlpha.OPAQUE, 0, 2, 1, 2),
+    LEAVES(BlockAlpha.OPAQUE, 2, 2);
 
 
     public static final int TEXTURE_DIMENSION = 16;

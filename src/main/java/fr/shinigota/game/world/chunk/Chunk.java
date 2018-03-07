@@ -206,7 +206,7 @@ public class Chunk {
         }
     }
 
-    private boolean isInside(Vector3ic position) {
+    public boolean isInside(Vector3ic position) {
         return      (getRealX() <= position.x() && position.x() < CHUNK_SIZE + getRealX() )
                 &&  (getRealZ() <= position.z() && position.z() < CHUNK_SIZE + getRealZ() );
 

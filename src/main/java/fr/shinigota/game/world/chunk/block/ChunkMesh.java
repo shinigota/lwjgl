@@ -12,7 +12,7 @@ public class ChunkMesh {
         this.chunk = chunk;
     }
 
-//    public List<Mesh> generate() {
+//    public List<Mesh> generatStructure() {
 //        chunk.getBlocks();
 //    }
 }

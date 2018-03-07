@@ -3,6 +3,8 @@ package fr.shinigota.game.world.chunk.generator;
 import fr.shinigota.game.world.chunk.Chunk;
 import fr.shinigota.game.world.chunk.block.Block;
 import fr.shinigota.game.world.chunk.block.BlockType;
+import fr.shinigota.game.world.structure.AbstractStructure;
+import fr.shinigota.game.world.structure.Tree;
 import org.joml.Vector3i;
 
 public class FilledGenerator implements IChunkGenerator {
@@ -32,6 +34,8 @@ public class FilledGenerator implements IChunkGenerator {
             }
         }
 
+        AbstractStructure tree = new Tree(chunk.getRealX() + 3, Chunk.SEA_LEVEL + 1, chunk.getRealZ() + 3 );
+        tree.generate(chunk);
         chunk.requestUpdate();
     }
 }
