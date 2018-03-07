@@ -33,7 +33,8 @@ public class Game implements IGameLogic {
     public Game(Renderer renderer, Controller controller) throws IOException {
         this.renderer = renderer;
 //        camera = new Camera(8, 9, 5);
-        camera = new Camera(8, 4, 30);
+//        camera = new Camera(8, 4, 30);
+        camera = new Camera(8, 4, 5);
         gameItems = new ArrayList<>();
         this.controller = controller;
 
@@ -78,7 +79,7 @@ public class Game implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(window, camera, world.getMeshes(), skybox);
+        renderer.render(window, camera, world.getAllMeshes(), skybox);
     }
 
     @Override

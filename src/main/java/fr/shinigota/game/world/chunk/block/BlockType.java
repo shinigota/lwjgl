@@ -5,11 +5,13 @@ import fr.shinigota.engine.graphic.texture.Texture;
 
 public enum BlockType {
     AIR(BlockAlpha.TRANSPARENT),
+    WATER(BlockAlpha.SEMI_TRANSPARENT, 2, 1),
 
     DIRT(BlockAlpha.OPAQUE, 1, 0),
     GRASS(BlockAlpha.OPAQUE, 0, 0, 1, 0, 2, 0),
     SAND(BlockAlpha.OPAQUE, 1, 1),
     STONE(BlockAlpha.OPAQUE, 0, 1);
+
 
     public static final int TEXTURE_DIMENSION = 16;
     public BlockFace up;
@@ -46,7 +48,19 @@ public enum BlockType {
                 .build();
     }
 
+    public boolean isVisible()  {
+        return type == BlockAlpha.TRANSPARENT || type == BlockAlpha.SEMI_TRANSPARENT;
+    }
+
     public boolean isTransparent()  {
         return type == BlockAlpha.TRANSPARENT;
+    }
+
+    public boolean isSemiTransparent()  {
+        return type == BlockAlpha.SEMI_TRANSPARENT;
+    }
+
+    public boolean isOpaque()  {
+        return type == BlockAlpha.OPAQUE;
     }
 }

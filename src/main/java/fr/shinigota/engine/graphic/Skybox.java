@@ -19,7 +19,7 @@ public class Skybox extends MeshEntity {
 
         Mesh skyboxMesh = Mesh.FACTORY.cubeMesh(skyboxTexture);
         setPosition(0, 0, 0);
-        setScale(50f);
+        setScale(1000f);
 
         setMesh(skyboxMesh);
     }

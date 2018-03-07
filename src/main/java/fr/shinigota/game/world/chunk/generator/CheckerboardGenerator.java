@@ -24,7 +24,7 @@ public class CheckerboardGenerator implements IChunkGenerator {
                         blockType = BlockType.AIR;
                     }
 
-                    Block block = new Block(blockType,chunk.getX() + x, y, chunk.getZ() + z);
+                    Block block = new Block(blockType,chunk.getRealX() + x, y, chunk.getRealZ() + z);
                     chunk.getBlocksMap().put(new Vector3i(block.getX(), block.getY(), block.getZ()), block);
 
                     chunk.setNeighbours(block);

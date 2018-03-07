@@ -34,4 +34,13 @@ public class Block {
     public BlockVisibilityController getVisibilityController() {
         return visibilityController;
     }
+
+    @Override
+    public String toString() {
+        return "Block{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
+    }
 }

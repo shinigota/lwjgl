@@ -14,11 +14,12 @@ public class BlockVisibilityController {
         this.self = self;
     }
 
+    private boolean visibleAndDifferent(Block block) {
+        return block == null || (block.getBlockType().isVisible() && !block.getBlockType().equals(self.getBlockType()));
+    }
+
     public boolean topVisible () {
-        if(top == null) {
-            return true;
-        }
-        return top.getBlockType().isTransparent();
+        return visibleAndDifferent(top);
     }
 
     public void setTop(Block top) {
@@ -27,10 +28,7 @@ public class BlockVisibilityController {
     }
 
     public boolean bottomVisible () {
-        if(bottom == null) {
-            return true;
-        }
-        return bottom.getBlockType().isTransparent();
+        return visibleAndDifferent(bottom);
     }
 
     public void setBottom(Block bottom) {
@@ -39,10 +37,7 @@ public class BlockVisibilityController {
     }
 
     public boolean frontVisible () {
-        if(front == null) {
-            return true;
-        }
-        return front.getBlockType().isTransparent();
+        return visibleAndDifferent(front);
     }
 
     public void setFront(Block front) {
@@ -51,10 +46,7 @@ public class BlockVisibilityController {
     }
 
     public boolean backVisible () {
-        if(back == null) {
-            return true;
-        }
-        return back.getBlockType().isTransparent();
+        return visibleAndDifferent(back);
     }
 
     public void setBack(Block back) {
@@ -63,10 +55,7 @@ public class BlockVisibilityController {
     }
 
     public boolean rightVisible () {
-        if(right == null) {
-            return true;
-        }
-        return right.getBlockType().isTransparent();
+        return visibleAndDifferent(right);
     }
 
     public void setRight(Block right) {
@@ -75,10 +64,7 @@ public class BlockVisibilityController {
     }
 
     public boolean leftVisible () {
-        if(left == null) {
-            return true;
-        }
-        return left.getBlockType().isTransparent();
+        return visibleAndDifferent(left);
     }
 
     public void setLeft(Block left) {
