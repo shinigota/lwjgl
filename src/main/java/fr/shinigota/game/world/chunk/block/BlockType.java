@@ -4,36 +4,39 @@ import fr.shinigota.engine.graphic.texture.CubeTexture;
 import fr.shinigota.engine.graphic.texture.Texture;
 
 public enum BlockType {
-    AIR(BlockAlpha.TRANSPARENT),
-    WATER(BlockAlpha.SEMI_TRANSPARENT, 2, 1),
+    AIR(MaterialType.NONE, BlockAlpha.TRANSPARENT),
+    WATER(MaterialType.LIQUID, BlockAlpha.SEMI_TRANSPARENT, 2, 1),
 
-    DIRT(BlockAlpha.OPAQUE, 1, 0),
-    GRASS(BlockAlpha.OPAQUE, 0, 0, 1, 0, 2, 0),
-    SAND(BlockAlpha.OPAQUE, 1, 1),
-    STONE(BlockAlpha.OPAQUE, 0, 1),
-    TRUNK(BlockAlpha.OPAQUE, 0, 2, 1, 2),
-    LEAVES(BlockAlpha.OPAQUE, 2, 2);
+    DIRT(MaterialType.SOLID, BlockAlpha.OPAQUE, 1, 0),
+    GRASS(MaterialType.SOLID, BlockAlpha.OPAQUE, 0, 0, 1, 0, 2, 0),
+    SAND(MaterialType.SOLID, BlockAlpha.OPAQUE, 1, 1),
+    STONE(MaterialType.SOLID, BlockAlpha.OPAQUE, 0, 1),
+    TRUNK(MaterialType.SOLID, BlockAlpha.OPAQUE, 0, 2, 1, 2),
+    LEAVES(MaterialType.SOLID, BlockAlpha.SEMI_TRANSPARENT, 2, 2);
 
 
     public static final int TEXTURE_DIMENSION = 16;
+    public MaterialType materialType;
     public BlockFace up;
     public BlockFace down;
     public BlockFace side;
     public BlockAlpha type;
 
-    BlockType(BlockAlpha type) {
+    BlockType(MaterialType materialType, BlockAlpha type) {
+        this.materialType = materialType;
         this.type = type;
     }
 
-    BlockType(BlockAlpha type, int x, int y) {
-        this(type, x, y, x, y);
+    BlockType(MaterialType materialType, BlockAlpha type, int x, int y) {
+        this(materialType, type, x, y, x, y);
     }
 
-    BlockType(BlockAlpha type, int xUp, int yUp, int xSide, int ySide) {
-        this(type, xUp, yUp, xSide, ySide, xUp, yUp);
+    BlockType(MaterialType materialType, BlockAlpha type, int xUp, int yUp, int xSide, int ySide) {
+        this(materialType, type, xUp, yUp, xSide, ySide, xUp, yUp);
     }
 
-    BlockType(BlockAlpha type, int xUp, int yUp, int xDown, int yDown, int xSide, int ySide) {
+    BlockType(MaterialType materialType, BlockAlpha type, int xUp, int yUp, int xDown, int yDown, int xSide, int ySide) {
+        this.materialType = materialType;
         this.type = type;
         up = new BlockFace(xUp, yUp);
         down = new BlockFace(xDown, yDown);
@@ -64,5 +67,13 @@ public enum BlockType {
 
     public boolean isOpaque()  {
         return type == BlockAlpha.OPAQUE;
+    }
+
+    public boolean isSolid() {
+        return materialType == MaterialType.SOLID;
+    }
+
+    public boolean isLiquid() {
+        return materialType == MaterialType.LIQUID;
     }
 }

@@ -15,7 +15,27 @@ public class BlockVisibilityController {
     }
 
     private boolean visibleAndDifferent(Block block) {
-        return block == null || (block.getBlockType().isVisible() && !block.getBlockType().equals(self.getBlockType()));
+        // self side tested is visible if block is null
+        if (block == null) {
+            return true;
+        }
+
+        // both block solids, merge them, contact side not visible
+        if ( self.getBlockType().isOpaque() && block.getBlockType().isOpaque() ) {
+            return false;
+        }
+
+        // both block liquids, merge them, contact side not visible
+        if ( self.getBlockType().isLiquid() && block.getBlockType().isLiquid() ) {
+            return false;
+        }
+
+        // self is liquid, other is solid, hide self face
+        if ( self.getBlockType().isSemiTransparent() && block.getBlockType().isOpaque() ) {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean topVisible () {
