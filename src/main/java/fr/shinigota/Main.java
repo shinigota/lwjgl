@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            boolean vSync = true;
+            boolean vSync = false;
 
             Controller gameController = new Controller();
             Renderer renderer = new Renderer(gameController);

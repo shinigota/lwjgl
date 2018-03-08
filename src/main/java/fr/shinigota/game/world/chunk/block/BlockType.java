@@ -11,7 +11,7 @@ public enum BlockType {
     GRASS(MaterialType.SOLID, BlockAlpha.OPAQUE, 0, 0, 1, 0, 2, 0),
     SAND(MaterialType.SOLID, BlockAlpha.OPAQUE, 1, 1),
     STONE(MaterialType.SOLID, BlockAlpha.OPAQUE, 0, 1),
-    TRUNK(MaterialType.SOLID, BlockAlpha.OPAQUE, 0, 2, 1, 2),
+    TRUNK(MaterialType.SOLID, BlockAlpha.OPAQUE, 1, 2, 0, 2),
     LEAVES(MaterialType.SOLID, BlockAlpha.SEMI_TRANSPARENT, 2, 2);
 
 
@@ -32,7 +32,7 @@ public enum BlockType {
     }
 
     BlockType(MaterialType materialType, BlockAlpha type, int xUp, int yUp, int xSide, int ySide) {
-        this(materialType, type, xUp, yUp, xSide, ySide, xUp, yUp);
+        this(materialType, type, xUp, yUp, xUp, yUp, xSide, ySide);
     }
 
     BlockType(MaterialType materialType, BlockAlpha type, int xUp, int yUp, int xDown, int yDown, int xSide, int ySide) {

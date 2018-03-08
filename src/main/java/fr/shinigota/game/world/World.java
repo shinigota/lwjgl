@@ -9,10 +9,7 @@ import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class World {
     private final Map<Vector2ic, Chunk> chunks;
@@ -26,12 +23,17 @@ public class World {
         blockTextures = new Texture("/textures/texturepack.png");
 
         chunks = new HashMap<>();
+        int seed = new Random().nextInt();
+        addChunk(-1, 0, new PerlinGenerator(seed));
+        addChunk(0, 0, new PerlinGenerator(seed));
+        addChunk(1, 0, new PerlinGenerator(seed));
+        addChunk(-1, 1, new PerlinGenerator(seed));
+        addChunk(0, 1, new PerlinGenerator(seed));
+        addChunk(1, 1, new PerlinGenerator(seed));
+        addChunk(-1, 2, new PerlinGenerator(seed));
+        addChunk(0, 2, new PerlinGenerator(seed));
+        addChunk(1, 2, new PerlinGenerator(seed));
 
-        addChunk(-1, 0, new CheckerboardGenerator());
-        addChunk(0, 0, new FilledGenerator());
-        addChunk(1, 0, new CheckerboardGenerator());
-        addChunk(0, -1, new PoolGenerator());
-        addChunk(0, 1, new DiagonalStaircaseGenerator());
 
         blocks = new ArrayList<>();
         meshes = new ArrayList<>();
@@ -74,22 +76,13 @@ public class World {
             chunk.generate();
         }
     }
-    public List<Block> getBlocks () {
-        if (!blocks.isEmpty()) {
-            return blocks;
-        }
-        blocks.clear();
-        for(Chunk chunk : chunks.values()) {
-            blocks.addAll(chunk.getBlocks());
-        }
-        return blocks;
-    }
 
     public List<MeshEntity> getMeshes() {
         if (!meshes.isEmpty()) {
+
             return meshes;
         }
-        meshes.clear();
+        System.out.println(System.currentTimeMillis() + "Copy");
         for(Chunk chunk : chunks.values()) {
             meshes.addAll(chunk.getMeshes(blockTextures));
         }
@@ -98,6 +91,7 @@ public class World {
 
     public List<MeshEntity> getTransparentMeshes() {
         if (!transparentMeshes.isEmpty()) {
+
             return transparentMeshes;
         }
         transparentMeshes.clear();
@@ -106,17 +100,6 @@ public class World {
         }
         return transparentMeshes;
     }
-
-    public List<MeshEntity> getAllMeshes() {
-        if (!allMeshes.isEmpty()) {
-            return allMeshes;
-        }
-        allMeshes.clear();
-        allMeshes.addAll(getMeshes());
-        allMeshes.addAll(getTransparentMeshes());
-        return allMeshes;
-    }
-
 
     public void cleanup() {
         if (blockTextures != null) {

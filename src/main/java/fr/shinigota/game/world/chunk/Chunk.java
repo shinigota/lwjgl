@@ -11,9 +11,9 @@ import org.joml.Vector3ic;
 import java.util.*;
 
 public class Chunk {
-    public static final int CHUNK_SIZE = 16;
-    public static final int CHUNK_HEIGHT = 16;
-    public static final int SEA_LEVEL = 8;
+    public static final int CHUNK_SIZE = 32;
+    public static final int CHUNK_HEIGHT = 64;
+    public static final int SEA_LEVEL = 25;
 
 
     /**
@@ -89,10 +89,10 @@ public class Chunk {
 
     public List<MeshEntity> getTransparentMeshes(Texture texture) {
         if (!updateRequired) {
-            return meshes;
+            return transparentMeshes;
         }
 
-        meshes.clear();
+        transparentMeshes.clear();
 
         for(Block block : blocks.values()) {
             if (!block.getBlockType().isSemiTransparent()) {
@@ -101,32 +101,32 @@ public class Chunk {
 
 
             if (block.getVisibilityController().topVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.up(block.getBlockType().getCubeTexture(texture).getUp()), block
+                transparentMeshes.add(new MeshEntity(FaceMesh.up(block.getBlockType().getCubeTexture(texture).getUp()), block
                         .getX(), block.getY(), block.getZ()));
             }
             if (block.getVisibilityController().bottomVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.down(block.getBlockType().getCubeTexture(texture).getDown()), block
+                transparentMeshes.add(new MeshEntity(FaceMesh.down(block.getBlockType().getCubeTexture(texture).getDown()), block
                         .getX(), block.getY(), block.getZ()));
             }
             if (block.getVisibilityController().frontVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.front(block.getBlockType().getCubeTexture(texture).getSide()), block
+                transparentMeshes.add(new MeshEntity(FaceMesh.front(block.getBlockType().getCubeTexture(texture).getSide()), block
                         .getX(), block.getY(), block.getZ()));
             }
             if (block.getVisibilityController().backVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.back(block.getBlockType().getCubeTexture(texture).getSide()), block
+                transparentMeshes.add(new MeshEntity(FaceMesh.back(block.getBlockType().getCubeTexture(texture).getSide()), block
                         .getX(), block.getY(), block.getZ()));
             }
             if (block.getVisibilityController().rightVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.right(block.getBlockType().getCubeTexture(texture).getSide()), block
+                transparentMeshes.add(new MeshEntity(FaceMesh.right(block.getBlockType().getCubeTexture(texture).getSide()), block
                         .getX(), block.getY(), block.getZ()));
             }
             if (block.getVisibilityController().leftVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.left(block.getBlockType().getCubeTexture(texture).getSide()), block
+                transparentMeshes.add(new MeshEntity(FaceMesh.left(block.getBlockType().getCubeTexture(texture).getSide()), block
                         .getX(), block.getY(), block.getZ()));
             }
         }
 
-        return meshes;
+        return transparentMeshes;
     }
 
     public List<Block> getBlocks() {
@@ -226,5 +226,9 @@ public class Chunk {
 
     public ChunkController getController() {
         return chunkController;
+    }
+
+    public Block getBlockAt(int x, int y, int z) {
+        return blocks.get(new Vector3i(x, y, z));
     }
 }

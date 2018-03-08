@@ -17,7 +17,7 @@ public class BlockVisibilityController {
     private boolean visibleAndDifferent(Block block) {
         // self side tested is visible if block is null
         if (block == null) {
-            return true;
+            return false;
         }
 
         // both block solids, merge them, contact side not visible

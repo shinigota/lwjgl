@@ -62,41 +62,24 @@ public class Renderer {
 
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
-
-        // Render each item
-        for (MeshEntity mesh : opaqueMeshes) {
-            if (mesh == null) {
-                continue;
-            }
-            // Set world matrix for this item
-            Matrix4f modelViewMatrix =
-                    transformation.getModelView(mesh, viewMatrix);
-            shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
-            // Render the mes for this game item
-            mesh.getMesh().render();
-        }
-
-
-
-// render transparent things
-
+        renderMeshEntityList(opaqueMeshes, viewMatrix);
         transparentMeshes.sort(new MeshDistanceComparator(camera.getPosition()));
-
-        // Render each item
-        for (MeshEntity mesh : transparentMeshes) {
-            if (mesh == null) {
-                continue;
-            }
-            // Set world matrix for this item
-            Matrix4f modelViewMatrix =
-                    transformation.getModelView(mesh, viewMatrix);
-            shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
-            // Render the mes for this game item
-            mesh.getMesh().render();
-        }
+        renderMeshEntityList(transparentMeshes, viewMatrix);
 
         shaderProgram.unbind();
 
+    }
+
+    private void renderMeshEntityList(List<MeshEntity> meshes, Matrix4f viewMatrix) {
+        // Render each item
+        for (MeshEntity mesh : meshes) {
+            // Set world matrix for this item
+            Matrix4f modelViewMatrix =
+                    transformation.getModelView(mesh, viewMatrix);
+            shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
+            // Render the mes for this game item
+            mesh.getMesh().render();
+        }
     }
 
     private void renderSkybox(Skybox skybox) {

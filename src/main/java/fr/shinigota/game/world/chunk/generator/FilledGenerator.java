@@ -36,6 +36,17 @@ public class FilledGenerator implements IChunkGenerator {
 
         AbstractStructure tree = new Tree(chunk.getRealX() + 3, Chunk.SEA_LEVEL + 1, chunk.getRealZ() + 3 );
         tree.generate(chunk);
+
+        tree = new Tree(chunk.getRealX() + 8, Chunk.SEA_LEVEL + 1, chunk.getRealZ() + 7 );
+        tree.generate(chunk);
+
+        tree = new Tree(chunk.getRealX() + 10, Chunk.SEA_LEVEL + 1, chunk.getRealZ() + 5 );
+        tree.generate(chunk);
+
+        tree = new Tree(chunk.getRealX() + 3, Chunk.SEA_LEVEL + 1, chunk.getRealZ() + 14 );
+        tree.generate(chunk);
+
+
         chunk.requestUpdate();
     }
 }
