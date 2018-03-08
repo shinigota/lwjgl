@@ -7,6 +7,7 @@ import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.ShaderProgram;
 import fr.shinigota.engine.graphic.Skybox;
 import fr.shinigota.engine.graphic.Transformation;
+import fr.shinigota.engine.graphic.mesh.comparator.MeshDistanceComparator;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class Renderer {
         window.setInputProcessor(controller);
     }
 
-    public void render(Window window, Camera camera, List<MeshEntity> gameItems, Skybox skybox) {
+    public void render(Window window, Camera camera, List<MeshEntity> opaqueMeshes, List<MeshEntity> transparentMeshes, Skybox skybox) {
         clear();
 
         if (window.isResized()) {
@@ -60,20 +61,42 @@ public class Renderer {
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+
+
         // Render each item
-        for (MeshEntity gameItem : gameItems) {
-            if (gameItem == null) {
+        for (MeshEntity mesh : opaqueMeshes) {
+            if (mesh == null) {
                 continue;
             }
             // Set world matrix for this item
             Matrix4f modelViewMatrix =
-                    transformation.getModelView(gameItem, viewMatrix);
+                    transformation.getModelView(mesh, viewMatrix);
             shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
             // Render the mes for this game item
-            gameItem.getMesh().render();
+            mesh.getMesh().render();
+        }
+
+
+
+// render transparent things
+
+        transparentMeshes.sort(new MeshDistanceComparator(camera.getPosition()));
+
+        // Render each item
+        for (MeshEntity mesh : transparentMeshes) {
+            if (mesh == null) {
+                continue;
+            }
+            // Set world matrix for this item
+            Matrix4f modelViewMatrix =
+                    transformation.getModelView(mesh, viewMatrix);
+            shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
+            // Render the mes for this game item
+            mesh.getMesh().render();
         }
 
         shaderProgram.unbind();
+
     }
 
     private void renderSkybox(Skybox skybox) {

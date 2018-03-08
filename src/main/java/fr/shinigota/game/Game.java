@@ -79,7 +79,7 @@ public class Game implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(window, camera, world.getAllMeshes(), skybox);
+        renderer.render(window, camera, world.getMeshes(), world.getTransparentMeshes(), skybox);
     }
 
     @Override
