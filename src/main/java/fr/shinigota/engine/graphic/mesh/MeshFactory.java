@@ -4,25 +4,25 @@ import fr.shinigota.engine.graphic.texture.CubeTexture;
 
 public class MeshFactory {
 
-    public Mesh cubeMesh(CubeTexture cubeTexture) {
+    public static Mesh cubeMesh(CubeTexture cubeTexture) {
 
         // Side properties
-        float sx = cubeTexture.getSide().getX();
-        float sy = cubeTexture.getSide().getY();
-        float sw = cubeTexture.getSide().getWidth();
-        float sh = cubeTexture.getSide().getHeight();
+        float sx = cubeTexture.side().getX();
+        float sy = cubeTexture.side().getY();
+        float sw = cubeTexture.side().getWidth();
+        float sh = cubeTexture.side().getHeight();
 
         // Up properties
-        float ux = cubeTexture.getUp().getX();
-        float uy = cubeTexture.getUp().getY();
-        float uw = cubeTexture.getUp().getWidth();
-        float uh = cubeTexture.getUp().getHeight();
+        float ux = cubeTexture.up().getX();
+        float uy = cubeTexture.up().getY();
+        float uw = cubeTexture.up().getWidth();
+        float uh = cubeTexture.up().getHeight();
 
         // Down properties
-        float dx = cubeTexture.getDown().getX();
-        float dy = cubeTexture.getDown().getY();
-        float dw = cubeTexture.getDown().getWidth();
-        float dh = cubeTexture.getDown().getHeight();
+        float dx = cubeTexture.down().getX();
+        float dy = cubeTexture.down().getY();
+        float dw = cubeTexture.down().getWidth();
+        float dh = cubeTexture.down().getHeight();
 
         // Create the Mesh
         float[] positions = new float[] {

@@ -1,10 +1,9 @@
 package fr.shinigota.engine.graphic.mesh;
 
-import fr.shinigota.engine.graphic.texture.CubeTexture;
 import fr.shinigota.engine.graphic.texture.TextureRegion;
 
-public class FaceMesh {
-    public static Mesh up(TextureRegion textureRegion) {
+public class InstancedFaceMesh {
+    public static InstancedMesh up(TextureRegion textureRegion) {
         // Up properties
         float ux = textureRegion.getX();
         float uy = textureRegion.getY();
@@ -30,10 +29,10 @@ public class FaceMesh {
         int[] indices = new int[]{
                 0, 1, 3, 0, 2, 3,
         };
-        return new Mesh(positions, indices, textCoords, textureRegion.getTexture());
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
     }
 
-    public static Mesh down(TextureRegion textureRegion) {
+    public static InstancedMesh down(TextureRegion textureRegion) {
         // Down properties
         float dx = textureRegion.getX();
         float dy = textureRegion.getY();
@@ -60,10 +59,10 @@ public class FaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new Mesh(positions, indices, textCoords, textureRegion.getTexture());
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
     }
 
-    public static Mesh back(TextureRegion textureRegion) {
+    public static InstancedMesh back(TextureRegion textureRegion) {
         // Back properties
         float bx = textureRegion.getX();
         float by = textureRegion.getY();
@@ -89,10 +88,10 @@ public class FaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new Mesh(positions, indices, textCoords, textureRegion.getTexture());
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
     }
 
-    public static Mesh right(TextureRegion textureRegion) {
+    public static InstancedMesh right(TextureRegion textureRegion) {
         // Right properties
         float rx = textureRegion.getX();
         float ry = textureRegion.getY();
@@ -118,10 +117,10 @@ public class FaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new Mesh(positions, indices, textCoords, textureRegion.getTexture());
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
     }
 
-    public static Mesh front(TextureRegion textureRegion) {
+    public static InstancedMesh front(TextureRegion textureRegion) {
         // Front properties
         float fx = textureRegion.getX();
         float fy = textureRegion.getY();
@@ -147,10 +146,10 @@ public class FaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new Mesh(positions, indices, textCoords, textureRegion.getTexture());
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
     }
 
-    public static Mesh left(TextureRegion textureRegion) {
+    public static InstancedMesh left(TextureRegion textureRegion) {
         // Left properties
         float lx = textureRegion.getX();
         float ly = textureRegion.getY();
@@ -176,6 +175,6 @@ public class FaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new Mesh(positions, indices, textCoords, textureRegion.getTexture());
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
     }
 }

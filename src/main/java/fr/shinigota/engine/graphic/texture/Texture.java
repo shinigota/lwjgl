@@ -4,6 +4,7 @@ import de.matthiasmann.twl.utils.PNGDecoder;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
@@ -14,8 +15,11 @@ public class Texture {
     private final int textureId;
     private final int width;
     private final int height;
+    private final String fileName;
 
     public Texture(String fileName) throws IOException {
+        this.fileName = fileName;
+
         // Decode the texture
         PNGDecoder decoder = new PNGDecoder(TextureRegion.class.getResourceAsStream(fileName));
         ByteBuffer buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
@@ -67,5 +71,32 @@ public class Texture {
 
     public TextureRegion getTextureAt(int x, int y, int width, int height) {
         return new TextureRegion(this, x, y, width, height);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(textureId, width, height, fileName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (! (obj instanceof  Texture) ) {
+            return false;
+        }
+
+        Texture other = (Texture) obj;
+        if (fileName.equals(((Texture) obj).fileName)) {
+            return false;
+        }
+
+        if (textureId != other.textureId) {
+            return false;
+        }
+
+        return true;
     }
 }

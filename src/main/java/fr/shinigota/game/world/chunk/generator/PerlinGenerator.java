@@ -15,8 +15,8 @@ public class PerlinGenerator implements IChunkGenerator {
         this.seed = seed;
         perlin = new Perlin();
         perlin.setSeed(seed);
-        perlin.setOctaveCount(2);
-        perlin.setFrequency(0.3);
+        perlin.setOctaveCount(1);
+        perlin.setFrequency(0.1);
     }
 
     @Override
@@ -24,20 +24,28 @@ public class PerlinGenerator implements IChunkGenerator {
 
         for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
             for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
-                double n = perlin.getValue( (chunk.getRealX() + x) * FACTOR, 0, (chunk.getRealZ() + z) * FACTOR) *
-                        Chunk.CHUNK_HEIGHT / 2;
-                int maxHeight = (int) n;
-//                System.out.println(n + " - " + maxHeight);
+                int noise = (int) (perlin.getValue( (chunk.getRealX() + x) * FACTOR, 0, (chunk.getRealZ() + z) * FACTOR) *
+                        Chunk.CHUNK_HEIGHT / 2);
+                int actualHeight = Chunk.CHUNK_HEIGHT / 2 + noise;
                 for (int y = 0; y <= Chunk.CHUNK_HEIGHT; y++) {
 
                     BlockType blockType = BlockType.AIR;
 
-                    if (y <= Chunk.CHUNK_HEIGHT / 2 + maxHeight) {
+                    if (y  <= actualHeight) {
                         blockType = BlockType.GRASS;
+
+                        if(y < actualHeight) {
+                            blockType = BlockType.DIRT;
+                        }
+
+                        if(y <= Chunk.SEA_LEVEL) {
+                            blockType = BlockType.SAND;
+                        }
                     }
 
                     Block block = new Block(blockType, chunk.getRealX() + x, y, chunk.getRealZ() + z);
                     chunk.getBlocksMap().put(new Vector3i(chunk.getRealX() + x, y, chunk.getRealZ() + z), block);
+                    chunk.putBlockByType(blockType, block);
 
                     chunk.setNeighbours(block);
                 }

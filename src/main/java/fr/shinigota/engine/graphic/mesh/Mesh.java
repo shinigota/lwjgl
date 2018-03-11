@@ -1,5 +1,6 @@
 package fr.shinigota.engine.graphic.mesh;
 
+import fr.shinigota.engine.graphic.entity.Entity;
 import fr.shinigota.engine.graphic.texture.Texture;
 import fr.shinigota.engine.graphic.texture.TextureRegion;
 import org.lwjgl.system.MemoryUtil;
@@ -8,6 +9,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
@@ -27,13 +30,11 @@ public class Mesh {
      */
     private final int vaoId;
 
-
-    private final List<Integer> vboIds;
-
     private final int vertexCount;
 
     private Texture texture;
 
+    protected final List<Integer> vboIds;
 
     public Mesh(float[] positions, int[] indices, float[] textCoords) {
 
@@ -124,7 +125,7 @@ public class Mesh {
         glDeleteVertexArrays(vaoId);
     }
 
-    public void render() {
+    protected void initRender() {
         // Activate first texture unit
         glActiveTexture(GL_TEXTURE0);
         // Bind the texture
@@ -134,13 +135,33 @@ public class Mesh {
         glBindVertexArray(vaoId);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+    }
 
-        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+    protected void endRender() {
 
         // Restore state
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glBindVertexArray(0);
+    }
+
+    public void render() {
+        initRender();
+
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+
+        endRender();
+    }
+
+    public void renderList(List<Entity> entities, Consumer<Entity> consumer) {
+        initRender();
+
+        for(Entity entity : entities) {
+            consumer.accept(entity);
+            glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+        }
+
+        endRender();
     }
 
     public float[] getPositions() {
@@ -155,4 +176,39 @@ public class Mesh {
         return textCoords;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(texture, positions, textCoords, indicies);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if ( ! (obj instanceof  Mesh) ) {
+            return false;
+        }
+
+        Mesh other = (Mesh) obj;
+
+        if (!texture.equals(other.texture)) {
+            return false;
+        }
+
+        if (positions != other.positions) {
+            return false;
+        }
+
+        if (textCoords != other.textCoords) {
+            return false;
+        }
+
+        if (indicies != other.indicies) {
+            return false;
+        }
+
+        return true;
+    }
 }

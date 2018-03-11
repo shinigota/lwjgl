@@ -79,16 +79,14 @@ public class Game implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(window, camera, world.getMeshes(), world.getTransparentMeshes(), skybox);
+        renderer.renderInstanced(window, camera, world.getInstancedOpaqueMeshes(), world.getInstancedTransparentMeshes(), skybox);
     }
 
     @Override
     public void cleanup() {
         renderer.cleanup();
 
-        for (MeshEntity mesh : gameItems) {
-            mesh.cleanup();
-        }
+        world.cleanup();
 
         if (skyboxTexture != null) {
             skyboxTexture.cleanup();

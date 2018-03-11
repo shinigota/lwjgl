@@ -13,15 +13,15 @@ public class CubeTexture {
         this.side = cubeTextureBuilder.side;
     }
 
-    public TextureRegion getUp() {
+    public TextureRegion up() {
         return up;
     }
 
-    public TextureRegion getDown() {
+    public TextureRegion down() {
         return down;
     }
 
-    public TextureRegion getSide() {
+    public TextureRegion side() {
         return side;
     }
 

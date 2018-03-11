@@ -1,14 +1,21 @@
 package fr.shinigota.game.world.chunk;
 
-import fr.shinigota.engine.graphic.entity.MeshEntity;
-import fr.shinigota.engine.graphic.mesh.FaceMesh;
-import fr.shinigota.engine.graphic.texture.Texture;
+import fr.shinigota.engine.graphic.entity.Entity;
+import fr.shinigota.engine.graphic.mesh.CubeMesh;
+import fr.shinigota.engine.graphic.mesh.InstancedCubeMesh;
+import fr.shinigota.engine.graphic.mesh.InstancedMesh;
+import fr.shinigota.engine.graphic.mesh.Mesh;
+import fr.shinigota.game.world.BlockMeshLoader;
 import fr.shinigota.game.world.chunk.block.Block;
+import fr.shinigota.game.world.chunk.block.BlockType;
 import fr.shinigota.game.world.chunk.generator.IChunkGenerator;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Chunk {
     public static final int CHUNK_SIZE = 32;
@@ -21,22 +28,34 @@ public class Chunk {
      * Value : block
      */
     private final Map<Vector3ic, Block> blocks;
+    private final Map<BlockType, List<Block>> blocksByTypes;
+
     private final IChunkGenerator generator;
     private final ChunkController chunkController;
-    private final List<MeshEntity> meshes;
-    private final List<MeshEntity> transparentMeshes;
+
+    private final Map<Mesh, List<Entity>> opaqueMeshes;
+    private final Map<Mesh, List<Entity>> transparentMeshes;
+
+    private final Map<InstancedMesh, List<Entity>> instancedOpaqueMeshes;
+    private final Map<InstancedMesh, List<Entity>> instancedTransparentMeshes;
+
     private final int x;
     private final int z;
+    private final BlockMeshLoader blockMeshLoader;
 
     private boolean updateRequired;
 
-    public Chunk(int x, int z, IChunkGenerator generator) {
+    public Chunk(int x, int z, IChunkGenerator generator, BlockMeshLoader blockMeshLoader) {
         this.x = x;
         this.z = z;
         blocks = new HashMap<>();
+        blocksByTypes = new HashMap<>();
         updateRequired = false;
-        meshes = new ArrayList<>();
-        transparentMeshes = new ArrayList<>();
+        opaqueMeshes = new HashMap<>();
+        transparentMeshes = new HashMap<>();
+        instancedOpaqueMeshes = new HashMap<>();
+        instancedTransparentMeshes = new HashMap<>();
+        this.blockMeshLoader = blockMeshLoader;
         this.generator = generator;
         chunkController = new ChunkController(this);
     }
@@ -45,88 +64,211 @@ public class Chunk {
         generator.generate(this);
     }
 
-    public List<MeshEntity> getMeshes(Texture texture) {
+    public Map<Mesh, List<Entity>> getOpaqueMeshes() {
         if (!updateRequired) {
-            return meshes;
+            return opaqueMeshes;
         }
 
-        meshes.clear();
+        opaqueMeshes.clear();
 
-        for(Block block : blocks.values()) {
-            if (!block.getBlockType().isOpaque()) {
+        for(Map.Entry<BlockType, List<Block>> blocksEntry : blocksByTypes.entrySet()) {
+            if (!blocksEntry.getKey().isOpaque()) {
                 continue;
             }
 
+            List<Block> blocks = blocksEntry.getValue();
+            if(blocks.size() < 10){
+                continue;
+            }
 
-            if (block.getVisibilityController().topVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.up(block.getBlockType().getCubeTexture(texture).getUp()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().bottomVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.down(block.getBlockType().getCubeTexture(texture).getDown()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().frontVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.front(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().backVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.back(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().rightVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.right(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().leftVisible()) {
-                meshes.add(new MeshEntity(FaceMesh.left(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
+            for (Block block : blocks) {
+                CubeMesh blockMesh = blockMeshLoader.getOpaqueMeshList().get(block.getBlockType());
+                Entity entity = new Entity(block.getX(), block.getY(), block.getZ());
+
+                if (block.getVisibilityController().topVisible()) {
+                    opaqueMeshes.putIfAbsent(blockMesh.up(), new ArrayList<>());
+                    opaqueMeshes.get(blockMesh.up()).add(entity);
+                }
+                if (block.getVisibilityController().bottomVisible()) {
+                    opaqueMeshes.putIfAbsent(blockMesh.down(), new ArrayList<>());
+                    opaqueMeshes.get(blockMesh.down()).add(entity);
+                }
+                if (block.getVisibilityController().frontVisible()) {
+                    opaqueMeshes.putIfAbsent(blockMesh.front(), new ArrayList<>());
+                    opaqueMeshes.get(blockMesh.front()).add(entity);
+                }
+                if (block.getVisibilityController().backVisible()) {
+                    opaqueMeshes.putIfAbsent(blockMesh.back(), new ArrayList<>());
+                    opaqueMeshes.get(blockMesh.back()).add(entity);
+                }
+                if (block.getVisibilityController().rightVisible()) {
+                    opaqueMeshes.putIfAbsent(blockMesh.right(), new ArrayList<>());
+                    opaqueMeshes.get(blockMesh.right()).add(entity);
+                }
+                if (block.getVisibilityController().leftVisible()) {
+                    opaqueMeshes.putIfAbsent(blockMesh.left(), new ArrayList<>());
+                    opaqueMeshes.get(blockMesh.left()).add(entity);
+                }
             }
         }
 
-        return meshes;
+        return opaqueMeshes;
     }
 
-    public List<MeshEntity> getTransparentMeshes(Texture texture) {
+    public Map<InstancedMesh, List<Entity>> getInstancedOpaqueMeshes() {
+        if (!updateRequired) {
+            return instancedOpaqueMeshes;
+        }
+
+        instancedOpaqueMeshes.clear();
+
+        for(Map.Entry<BlockType, List<Block>> blocksEntry : blocksByTypes.entrySet()) {
+            if (!blocksEntry.getKey().isOpaque()) {
+                continue;
+            }
+
+            List<Block> blocks = blocksEntry.getValue();
+            if(blocks.size() < 10){
+                continue;
+            }
+
+            for (Block block : blocks) {
+
+                InstancedCubeMesh blockMesh = blockMeshLoader.getInstancedOpaqueMesh().get(block.getBlockType());
+                Entity entity = new Entity(block.getX(), block.getY(), block.getZ());
+
+                if (block.getVisibilityController().topVisible()) {
+                    instancedOpaqueMeshes.putIfAbsent(blockMesh.up(), new ArrayList<>());
+                    instancedOpaqueMeshes.get(blockMesh.up()).add(entity);
+                }
+                if (block.getVisibilityController().bottomVisible()) {
+                    instancedOpaqueMeshes.putIfAbsent(blockMesh.down(), new ArrayList<>());
+                    instancedOpaqueMeshes.get(blockMesh.down()).add(entity);
+                }
+                if (block.getVisibilityController().frontVisible()) {
+                    instancedOpaqueMeshes.putIfAbsent(blockMesh.front(), new ArrayList<>());
+                    instancedOpaqueMeshes.get(blockMesh.front()).add(entity);
+                }
+                if (block.getVisibilityController().backVisible()) {
+                    instancedOpaqueMeshes.putIfAbsent(blockMesh.back(), new ArrayList<>());
+                    instancedOpaqueMeshes.get(blockMesh.back()).add(entity);
+                }
+                if (block.getVisibilityController().rightVisible()) {
+                    instancedOpaqueMeshes.putIfAbsent(blockMesh.right(), new ArrayList<>());
+                    instancedOpaqueMeshes.get(blockMesh.right()).add(entity);
+                }
+                if (block.getVisibilityController().leftVisible()) {
+                    instancedOpaqueMeshes.putIfAbsent(blockMesh.left(), new ArrayList<>());
+                    instancedOpaqueMeshes.get(blockMesh.left()).add(entity);
+                }
+            }
+        }
+
+        return instancedOpaqueMeshes;
+    }
+
+    public Map<Mesh, List<Entity>> getTransparentMeshes() {
         if (!updateRequired) {
             return transparentMeshes;
         }
 
         transparentMeshes.clear();
 
-        for(Block block : blocks.values()) {
-            if (!block.getBlockType().isSemiTransparent()) {
+        for(Map.Entry<BlockType, List<Block>> blocksEntry : blocksByTypes.entrySet()) {
+            if (!blocksEntry.getKey().isSemiTransparent()) {
                 continue;
             }
 
+            List<Block> blocks = blocksEntry.getValue();
+            if(blocks.size() < 10){
+                continue;
+            }
 
-            if (block.getVisibilityController().topVisible()) {
-                transparentMeshes.add(new MeshEntity(FaceMesh.up(block.getBlockType().getCubeTexture(texture).getUp()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().bottomVisible()) {
-                transparentMeshes.add(new MeshEntity(FaceMesh.down(block.getBlockType().getCubeTexture(texture).getDown()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().frontVisible()) {
-                transparentMeshes.add(new MeshEntity(FaceMesh.front(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().backVisible()) {
-                transparentMeshes.add(new MeshEntity(FaceMesh.back(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().rightVisible()) {
-                transparentMeshes.add(new MeshEntity(FaceMesh.right(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
-            }
-            if (block.getVisibilityController().leftVisible()) {
-                transparentMeshes.add(new MeshEntity(FaceMesh.left(block.getBlockType().getCubeTexture(texture).getSide()), block
-                        .getX(), block.getY(), block.getZ()));
+            for (Block block : blocks) {
+
+                CubeMesh blockMesh = blockMeshLoader.getTransparentMeshList().get(block.getBlockType());
+                Entity entity = new Entity(block.getX(), block.getY(), block.getZ());
+
+                if (block.getVisibilityController().topVisible()) {
+                    transparentMeshes.putIfAbsent(blockMesh.up(), new ArrayList<>());
+                    transparentMeshes.get(blockMesh.up()).add(entity);
+                }
+                if (block.getVisibilityController().bottomVisible()) {
+                    transparentMeshes.putIfAbsent(blockMesh.down(), new ArrayList<>());
+                    transparentMeshes.get(blockMesh.down()).add(entity);
+                }
+                if (block.getVisibilityController().frontVisible()) {
+                    transparentMeshes.putIfAbsent(blockMesh.front(), new ArrayList<>());
+                    transparentMeshes.get(blockMesh.front()).add(entity);
+                }
+                if (block.getVisibilityController().backVisible()) {
+                    transparentMeshes.putIfAbsent(blockMesh.back(), new ArrayList<>());
+                    transparentMeshes.get(blockMesh.back()).add(entity);
+                }
+                if (block.getVisibilityController().rightVisible()) {
+                    transparentMeshes.putIfAbsent(blockMesh.right(), new ArrayList<>());
+                    transparentMeshes.get(blockMesh.right()).add(entity);
+                }
+                if (block.getVisibilityController().leftVisible()) {
+                    transparentMeshes.putIfAbsent(blockMesh.left(), new ArrayList<>());
+                    transparentMeshes.get(blockMesh.left()).add(entity);
+                }
             }
         }
 
         return transparentMeshes;
+    }
+
+    public Map<InstancedMesh, List<Entity>> getInstancedTransparentMeshes() {
+        if (!updateRequired) {
+            return instancedTransparentMeshes;
+        }
+
+        instancedTransparentMeshes.clear();
+
+        for(Map.Entry<BlockType, List<Block>> blocksEntry : blocksByTypes.entrySet()) {
+            if (!blocksEntry.getKey().isSemiTransparent()) {
+                continue;
+            }
+
+            List<Block> blocks = blocksEntry.getValue();
+            if(blocks.size() < 10){
+                continue;
+            }
+
+            for (Block block : blocks) {
+
+                InstancedCubeMesh blockMesh = blockMeshLoader.getInstancedTransparentMesh().get(block.getBlockType());
+                Entity entity = new Entity(block.getX(), block.getY(), block.getZ());
+
+                if (block.getVisibilityController().topVisible()) {
+                    instancedTransparentMeshes.putIfAbsent(blockMesh.up(), new ArrayList<>());
+                    instancedTransparentMeshes.get(blockMesh.up()).add(entity);
+                }
+                if (block.getVisibilityController().bottomVisible()) {
+                    instancedTransparentMeshes.putIfAbsent(blockMesh.down(), new ArrayList<>());
+                    instancedTransparentMeshes.get(blockMesh.down()).add(entity);
+                }
+                if (block.getVisibilityController().frontVisible()) {
+                    instancedTransparentMeshes.putIfAbsent(blockMesh.front(), new ArrayList<>());
+                    instancedTransparentMeshes.get(blockMesh.front()).add(entity);
+                }
+                if (block.getVisibilityController().backVisible()) {
+                    instancedTransparentMeshes.putIfAbsent(blockMesh.back(), new ArrayList<>());
+                    instancedTransparentMeshes.get(blockMesh.back()).add(entity);
+                }
+                if (block.getVisibilityController().rightVisible()) {
+                    instancedTransparentMeshes.putIfAbsent(blockMesh.right(), new ArrayList<>());
+                    instancedTransparentMeshes.get(blockMesh.right()).add(entity);
+                }
+                if (block.getVisibilityController().leftVisible()) {
+                    instancedTransparentMeshes.putIfAbsent(blockMesh.left(), new ArrayList<>());
+                    instancedTransparentMeshes.get(blockMesh.left()).add(entity);
+                }
+            }
+        }
+
+        return instancedTransparentMeshes;
     }
 
     public List<Block> getBlocks() {
@@ -230,5 +372,10 @@ public class Chunk {
 
     public Block getBlockAt(int x, int y, int z) {
         return blocks.get(new Vector3i(x, y, z));
+    }
+
+    public void putBlockByType(BlockType type, Block block) {
+        blocksByTypes.putIfAbsent(type, new ArrayList<>());
+        blocksByTypes.get(type).add(block);
     }
 }
