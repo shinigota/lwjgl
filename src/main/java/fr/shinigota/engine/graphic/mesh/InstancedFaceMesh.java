@@ -29,7 +29,7 @@ public class InstancedFaceMesh {
         int[] indices = new int[]{
                 0, 1, 3, 0, 2, 3,
         };
-        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture());
     }
 
     public static InstancedMesh down(TextureRegion textureRegion) {
@@ -59,7 +59,7 @@ public class InstancedFaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture());
     }
 
     public static InstancedMesh back(TextureRegion textureRegion) {
@@ -88,7 +88,7 @@ public class InstancedFaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture());
     }
 
     public static InstancedMesh right(TextureRegion textureRegion) {
@@ -117,7 +117,7 @@ public class InstancedFaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture());
     }
 
     public static InstancedMesh front(TextureRegion textureRegion) {
@@ -146,7 +146,7 @@ public class InstancedFaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture());
     }
 
     public static InstancedMesh left(TextureRegion textureRegion) {
@@ -175,6 +175,6 @@ public class InstancedFaceMesh {
         int[] indices = new int[]{
                 0, 2, 3, 1, 0, 3,
         };
-        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture(), 0);
+        return new InstancedMesh(positions, indices, textCoords, textureRegion.getTexture());
     }
 }

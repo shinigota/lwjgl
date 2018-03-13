@@ -3,7 +3,6 @@ package fr.shinigota.game;
 import fr.shinigota.engine.Utils;
 import fr.shinigota.engine.Window;
 import fr.shinigota.engine.graphic.entity.Entity;
-import fr.shinigota.engine.graphic.entity.MeshEntity;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.ShaderProgram;
 import fr.shinigota.engine.graphic.Skybox;
@@ -11,6 +10,7 @@ import fr.shinigota.engine.graphic.Transformation;
 import fr.shinigota.engine.graphic.mesh.InstancedMesh;
 import fr.shinigota.engine.graphic.mesh.Mesh;
 import fr.shinigota.engine.graphic.mesh.comparator.EntityDistanceComparator;
+import fr.shinigota.game.world.renderer.Renderable;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class Renderer {
         window.setInputProcessor(controller);
     }
 
-    public void render(Window window, Camera camera, Map<Mesh, List<Entity>> opaqueMeshes, Map<Mesh, List<Entity>> transparentMeshes, Skybox skybox) {
+    public void renderInstanced(Window window, Camera camera, Renderable scene, Skybox skybox) {
         clear();
 
         if (window.isResized()) {
@@ -61,42 +61,17 @@ public class Renderer {
         shaderProgram.setUniform("texture_sampler", 0);
 
         renderSkybox(skybox);
-        // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+//         Update projection Matrix
+        Matrix4f projectionMatrix = transformation.updateProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        Matrix4f viewMatrix = transformation.updateViewMatrix(camera);
 
-        renderMeshEntityList(opaqueMeshes, viewMatrix);
+        renderInstancedMeshEntityList(scene.getInstancedOpaqueMeshes(), viewMatrix);
+        renderMeshEntityList(scene.getOpaqueMeshes(), viewMatrix);
 //        transparentMeshes.sort(new EntityDistanceComparator(camera.getPosition()));
-        renderMeshEntityList(transparentMeshes, viewMatrix);
-
-        shaderProgram.unbind();
-
-    }
-
-    public void renderInstanced(Window window, Camera camera, Map<InstancedMesh, List<Entity>> opaqueMeshes, Map<InstancedMesh, List<Entity>> transparentMeshes, Skybox skybox) {
-        clear();
-
-        if (window.isResized()) {
-            glViewport(0, 0, window.getWidth(), window.getHeight());
-            window.setResized(false);
-        }
-
-        shaderProgram.bind();
-
-        shaderProgram.setUniform("texture_sampler", 0);
-
-        renderSkybox(skybox);
-        // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
-        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
-
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
-
-        renderInstancedMeshEntityList(opaqueMeshes, viewMatrix);
-//        transparentMeshes.sort(new EntityDistanceComparator(camera.getPosition()));
-        renderInstancedMeshEntityList(transparentMeshes, viewMatrix);
+        renderInstancedMeshEntityList(scene.getInstancedTransparentMeshes(), viewMatrix);
+        renderMeshEntityList(scene.getTransparentMeshes(), viewMatrix);
 
         shaderProgram.unbind();
 
@@ -107,15 +82,10 @@ public class Renderer {
         shaderProgram.setUniform("isInstanced", 0);
         for (Map.Entry<Mesh, List<Entity>> mesh : meshes.entrySet()) {
             mesh.getKey().renderList(mesh.getValue(), (Entity entity) -> {
-                Matrix4f modelViewMatrix = transformation.getModelView(entity, viewMatrix);
+                Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(entity, viewMatrix);
                 shaderProgram.setUniform("modelWorldNonInstancedMatrix", modelViewMatrix);
             });
             // Set world matrix for this item
-//            Matrix4f modelViewMatrix =
-//                    transformation.getModelView(mesh, viewMatrix);
-//            shaderProgram.setUniform("modelWorldMatrix", modelViewMatrix);
-//            // Render the mes for this game item
-//            mesh.getMesh().render();
         }
     }
 
@@ -135,7 +105,7 @@ public class Renderer {
         tmpViewMatrix.m30(0);
         tmpViewMatrix.m31(0);
         tmpViewMatrix.m32(0);
-        Matrix4f tmpModelViewMatrix = transformation.getModelView(skybox, tmpViewMatrix);
+        Matrix4f tmpModelViewMatrix = transformation.buildModelViewMatrix(skybox, tmpViewMatrix);
         shaderProgram.setUniform("modelWorldNonInstancedMatrix", tmpModelViewMatrix);
         skybox.getMesh().render();
 

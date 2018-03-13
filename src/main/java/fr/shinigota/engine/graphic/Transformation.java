@@ -3,69 +3,63 @@ package fr.shinigota.engine.graphic;
 import fr.shinigota.engine.graphic.entity.Entity;
 import fr.shinigota.engine.graphic.entity.MeshEntity;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class Transformation {
+
     private final Matrix4f projectionMatrix;
-    private final Matrix4f worldMatrix;
-    private final Matrix4f viewMatrix;
-    private final Matrix4f modelViewMatrix;
+
     private final Matrix4f modelMatrix;
+
+    private final Matrix4f modelViewMatrix;
+
+    private final Matrix4f viewMatrix;
 
     public Transformation() {
         projectionMatrix = new Matrix4f();
-        worldMatrix = new Matrix4f();
-        viewMatrix = new Matrix4f();
-        modelViewMatrix = new Matrix4f();
         modelMatrix = new Matrix4f();
+        modelViewMatrix = new Matrix4f();
+        viewMatrix = new Matrix4f();
     }
 
-    public final Matrix4f getProjectionMatrix() {
+    public Matrix4f getProjectionMatrix() {
         return projectionMatrix;
     }
 
-    public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+    public Matrix4f updateProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
         float aspectRatio = width / height;
-        projectionMatrix.identity();
-        projectionMatrix.perspective(fov, aspectRatio, zNear, zFar);
-        return projectionMatrix;
-    }
-
-    @Deprecated(forRemoval = true)
-    public Matrix4f getWorldMatrix(Vector3f offset, Vector3f rotation, float scale) {
-        worldMatrix.identity().translate(offset)
-                .rotateX((float)Math.toRadians(rotation.x))
-                .rotateY((float)Math.toRadians(rotation.y))
-                .rotateZ((float)Math.toRadians(rotation.z))
-                .scale(scale);
-        return worldMatrix;
-    }
-
-    public Matrix4f getModelView(Entity gameItem, Matrix4f viewMatrix) {
-        Vector3f rotation = gameItem.getRotation();
-        modelMatrix.identity().translate(gameItem.getPosition()).
-                rotateX((float)Math.toRadians(-rotation.x)).
-                rotateY((float)Math.toRadians(-rotation.y)).
-                rotateZ((float)Math.toRadians(-rotation.z)).
-                scale(gameItem.getScale());
-        modelViewMatrix.set(viewMatrix);
-        return modelViewMatrix.mul(modelMatrix);
+        return projectionMatrix.setPerspective(fov, aspectRatio, zNear, zFar);
     }
 
     public Matrix4f getViewMatrix() {
         return viewMatrix;
     }
 
-    public Matrix4f getViewMatrix(Camera camera) {
-        Vector3f cameraPos = camera.getPosition();
-        Vector3f rotation = camera.getRotation();
-        viewMatrix.identity();
-        // First do the rotation so camera rotates over its position
-        viewMatrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
-                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
-        // Then do the translation
-        viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-        return viewMatrix;
+    public Matrix4f updateViewMatrix(Camera camera) {
+        return updateGenericViewMatrix(camera.getPosition(), camera.getRotation(), viewMatrix);
     }
 
+    private Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
+        // First do the rotation so camera rotates over its position
+        return matrix.rotationX((float)Math.toRadians(rotation.x))
+                .rotateY((float)Math.toRadians(rotation.y))
+                .translate(-position.x, -position.y, -position.z);
+    }
+
+    public Matrix4f buildModelMatrix(Entity entity) {
+        Quaternionf rotation = entity.getRotation();
+        return modelMatrix.translationRotateScale(
+                entity.getPosition().x, entity.getPosition().y, entity.getPosition().z,
+                rotation.x, rotation.y, rotation.z, rotation.w,
+                entity.getScale(), entity.getScale(), entity.getScale());
+    }
+
+    public Matrix4f buildModelViewMatrix(Entity Entity, Matrix4f viewMatrix) {
+        return buildModelViewMatrix(buildModelMatrix(Entity), viewMatrix);
+    }
+
+    public Matrix4f buildModelViewMatrix(Matrix4f modelMatrix, Matrix4f viewMatrix) {
+        return viewMatrix.mulAffine(modelMatrix, modelViewMatrix);
+    }
 }

@@ -28,7 +28,7 @@ public class Mesh {
     /**
      * Verticies arrays object
      */
-    private final int vaoId;
+    protected final int vaoId;
 
     private final int vertexCount;
 

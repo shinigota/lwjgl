@@ -21,7 +21,6 @@ public class Game implements IGameLogic {
 
     private final Renderer renderer;
     private final Camera camera;
-    private final List<MeshEntity> gameItems;
 
     private final Controller controller;
 
@@ -35,7 +34,6 @@ public class Game implements IGameLogic {
 //        camera = new Camera(8, 9, 5);
         camera = new Camera(8, 60, 30);
 //        camera = new Camera(8, 4, 5);
-        gameItems = new ArrayList<>();
         this.controller = controller;
 
     }
@@ -79,7 +77,7 @@ public class Game implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        renderer.renderInstanced(window, camera, world.getInstancedOpaqueMeshes(), world.getInstancedTransparentMeshes(), skybox);
+        renderer.renderInstanced(window, camera, world.getRenderer(), skybox);
     }
 
     @Override

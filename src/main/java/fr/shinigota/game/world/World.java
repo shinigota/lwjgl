@@ -7,6 +7,8 @@ import fr.shinigota.engine.graphic.texture.Texture;
 import fr.shinigota.game.world.chunk.Chunk;
 import fr.shinigota.game.world.chunk.generator.IChunkGenerator;
 import fr.shinigota.game.world.chunk.generator.PerlinGenerator;
+import fr.shinigota.game.world.renderer.Renderable;
+import fr.shinigota.game.world.renderer.Scene;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
@@ -16,36 +18,28 @@ import java.util.*;
 public class World {
     private final Map<Vector2ic, Chunk> chunks;
 
-    private final Map<Mesh, List<Entity>> opaqueMeshes;
-    private final Map<Mesh, List<Entity>> transparentMeshes;
-
-    private final Map<InstancedMesh, List<Entity>> instancedOpaqueMeshes;
-    private final Map<InstancedMesh, List<Entity>> instancedTransparentMeshes;
-
     private final Texture blockTextures;
     private final BlockMeshLoader blockMeshLoader;
 
+    private final Renderable renderer;
+
     public World() throws IOException {
+        chunks = new HashMap<>();
+
         blockTextures = new Texture("/textures/texturepack.png");
         blockMeshLoader = new BlockMeshLoader(blockTextures);
 
-        chunks = new HashMap<>();
+        renderer = new Scene(this, blockMeshLoader);
+
         int seed = new Random().nextInt();
-        addChunk(-1, 0, new PerlinGenerator(seed));
-        addChunk(0, 0, new PerlinGenerator(seed));
-        addChunk(1, 0, new PerlinGenerator(seed));
-        addChunk(-1, 1, new PerlinGenerator(seed));
-        addChunk(0, 1, new PerlinGenerator(seed));
-        addChunk(1, 1, new PerlinGenerator(seed));
-        addChunk(-1, 2, new PerlinGenerator(seed));
-        addChunk(0, 2, new PerlinGenerator(seed));
-        addChunk(1, 2, new PerlinGenerator(seed));
 
+        int size = 10;
 
-        opaqueMeshes = new HashMap<>();
-        transparentMeshes = new HashMap<>();
-        instancedOpaqueMeshes = new HashMap<>();
-        instancedTransparentMeshes = new HashMap<>();
+        for(int x = 0; x < size; x++) {
+            for (int z = 0; z < size; z++) {
+                addChunk(x - size / 2, z - size / 2, new PerlinGenerator(seed));
+            }
+        }
     }
 
     private void addChunk(int x, int z, IChunkGenerator generator) {
@@ -84,60 +78,19 @@ public class World {
         }
     }
 
-    public Map<Mesh, List<Entity>>  getOpaqueMeshes() {
-        if (!opaqueMeshes.isEmpty()) {
-            return opaqueMeshes;
-        }
-        for(Chunk chunk : chunks.values()) {
-            for(Map.Entry<Mesh, List<Entity>> entry : chunk.getOpaqueMeshes().entrySet()) {
-                opaqueMeshes.putIfAbsent(entry.getKey(), new ArrayList<>());
-                opaqueMeshes.get(entry.getKey()).addAll(entry.getValue());
-            }
-        }
-        return opaqueMeshes;
-    }
-
-    public Map<Mesh, List<Entity>> getTransparentMeshes() {
-        if (!transparentMeshes.isEmpty()) {
-            return transparentMeshes;
-        }
-        for(Chunk chunk : chunks.values()) {
-            for(Map.Entry<Mesh, List<Entity>> entry : chunk.getTransparentMeshes().entrySet()) {
-                transparentMeshes.putIfAbsent(entry.getKey(), new ArrayList<>());
-                transparentMeshes.get(entry.getKey()).addAll(entry.getValue());
-            }
-        }
-        return transparentMeshes;
-    }
-
-    public Map<InstancedMesh, List<Entity>>  getInstancedOpaqueMeshes() {
-        if (!instancedOpaqueMeshes.isEmpty()) {
-            return instancedOpaqueMeshes;
-        }
-        for(Chunk chunk : chunks.values()) {
-            for(Map.Entry<InstancedMesh, List<Entity>> entry : chunk.getInstancedOpaqueMeshes().entrySet()) {
-                instancedOpaqueMeshes.putIfAbsent(entry.getKey(), new ArrayList<>());
-                instancedOpaqueMeshes.get(entry.getKey()).addAll(entry.getValue());
-            }
-        }
-        return instancedOpaqueMeshes;
-    }
-
-    public Map<InstancedMesh, List<Entity>> getInstancedTransparentMeshes() {
-        if (!instancedTransparentMeshes.isEmpty()) {
-            return instancedTransparentMeshes;
-        }
-        for(Chunk chunk : chunks.values()) {
-            for(Map.Entry<InstancedMesh, List<Entity>> entry : chunk.getInstancedTransparentMeshes().entrySet()) {
-                instancedTransparentMeshes.putIfAbsent(entry.getKey(), new ArrayList<>());
-                instancedTransparentMeshes.get(entry.getKey()).addAll(entry.getValue());
-            }
-        }
-        return instancedTransparentMeshes;
-    }
-
     public void cleanup() {
         blockTextures.cleanup();
-        blockMeshLoader.cleanup();
+        renderer.cleanup();
+        for(Chunk chunk : chunks.values()) {
+            chunk.cleanup();
+        }
+    }
+
+    public Map<Vector2ic, Chunk> getChunks() {
+        return chunks;
+    }
+
+    public Renderable getRenderer() {
+        return renderer;
     }
 }

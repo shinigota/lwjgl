@@ -21,15 +21,14 @@ public abstract class AbstractStructure {
     }
 
     public void generate(Chunk chunk) {
-        if (!chunk.isInside(new Vector3i(x, y, 0))) {
+        if (!chunk.isInside(new Vector3i(x, y, z))) {
             throw new UnsupportedOperationException("Structure outside of chunk");
         }
 
         generateStructure(x, y, z);
 
         for (Block block : blocks) {
-            chunk.getBlocksMap().put(new Vector3i(block.getX(), block.getY(), block.getZ()), block);
-            chunk.setNeighbours(block);
+            chunk.addBlockAt(block, block.getX(), block.getY(), block.getZ(), true);
         }
     }
 

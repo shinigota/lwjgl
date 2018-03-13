@@ -1,11 +1,12 @@
 package fr.shinigota.engine.graphic.entity;
 
 import fr.shinigota.engine.graphic.mesh.Mesh;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class Entity {
     private final Vector3f position;
-    private final Vector3f rotation;
+    private final Quaternionf rotation;
     private float scale;
 
     public Entity() {
@@ -15,7 +16,7 @@ public class Entity {
     public Entity(float x, float y, float z) {
         scale = 1;
         position = new Vector3f(x, y, z);
-        rotation = new Vector3f(0, 0, 0);
+        rotation = new Quaternionf();
     }
 
     public Vector3f getPosition() {
@@ -36,13 +37,20 @@ public class Entity {
         this.scale = scale;
     }
 
-    public Vector3f getRotation() {
+    public Quaternionf getRotation() {
         return rotation;
     }
 
-    public void setRotation(float x, float y, float z) {
-        rotation.x = x;
-        rotation.y = y;
-        rotation.z = z;
+    public void setRotation(Quaternionf q) {
+        rotation.set(q);
+    }
+
+    @Override
+    public String toString() {
+        return "Entity{" +
+                "x=" + position.x +
+                ", y=" + position.y +
+                ", z=" + position.z +
+                '}';
     }
 }
