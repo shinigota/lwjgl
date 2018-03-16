@@ -97,7 +97,6 @@ public class Camera {
             position.add(new Vector3f(right).mul(velocity));
         }
 
-//        System.out.println(toString());
     }
 
     @Override

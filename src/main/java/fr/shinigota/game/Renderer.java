@@ -7,12 +7,14 @@ import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.ShaderProgram;
 import fr.shinigota.engine.graphic.Skybox;
 import fr.shinigota.engine.graphic.Transformation;
+import fr.shinigota.engine.graphic.entity.MeshEntity;
 import fr.shinigota.engine.graphic.mesh.InstancedMesh;
 import fr.shinigota.engine.graphic.mesh.Mesh;
-import fr.shinigota.engine.graphic.mesh.comparator.EntityDistanceComparator;
+import fr.shinigota.engine.tools.FrustumCullingFilter;
 import fr.shinigota.game.world.renderer.Renderable;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +29,15 @@ public class Renderer {
 
     private ShaderProgram shaderProgram;
 
+    private final FrustumCullingFilter frustumFilter;
+
+    private final List<Entity> filteredItems;
 
     public Renderer(Controller controller) {
         transformation = new Transformation();
         this.controller = controller;
+        frustumFilter = new FrustumCullingFilter();
+        filteredItems = new ArrayList<>();
     }
 
 
@@ -48,7 +55,7 @@ public class Renderer {
         window.setInputProcessor(controller);
     }
 
-    public void renderInstanced(Window window, Camera camera, Renderable scene, Skybox skybox) {
+    public void render(Window window, Camera camera, Renderable scene, Skybox skybox) {
         clear();
 
         if (window.isResized()) {
@@ -56,22 +63,36 @@ public class Renderer {
             window.setResized(false);
         }
 
+
+
         shaderProgram.bind();
 
         shaderProgram.setUniform("texture_sampler", 0);
 
+
+
         renderSkybox(skybox);
 //         Update projection Matrix
         Matrix4f projectionMatrix = transformation.updateProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
         Matrix4f viewMatrix = transformation.updateViewMatrix(camera);
 
+        List<MeshEntity> sortedTransparentMeshes = scene.getSortedTransparentMeshes(camera.getPosition());
+
+        frustumFilter.update(projectionMatrix, viewMatrix);
+        frustumFilter.filter(scene.getInstancedOpaqueMeshes());
+        frustumFilter.filter(scene.getOpaqueMeshes());
+        frustumFilter.filter(scene.getInstancedTransparentMeshes());
+        frustumFilter.filter(scene.getTransparentMeshes());
+        frustumFilter.filter(sortedTransparentMeshes);
+
         renderInstancedMeshEntityList(scene.getInstancedOpaqueMeshes(), viewMatrix);
         renderMeshEntityList(scene.getOpaqueMeshes(), viewMatrix);
 //        transparentMeshes.sort(new EntityDistanceComparator(camera.getPosition()));
-        renderInstancedMeshEntityList(scene.getInstancedTransparentMeshes(), viewMatrix);
-        renderMeshEntityList(scene.getTransparentMeshes(), viewMatrix);
+//        renderInstancedMeshEntityList(scene.getInstancedTransparentMeshes(), viewMatrix);
+        renderMeshEntityList(sortedTransparentMeshes, viewMatrix);
 
         shaderProgram.unbind();
 
@@ -85,7 +106,18 @@ public class Renderer {
                 Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(entity, viewMatrix);
                 shaderProgram.setUniform("modelWorldNonInstancedMatrix", modelViewMatrix);
             });
-            // Set world matrix for this item
+        }
+    }
+
+    private void renderMeshEntityList(List<MeshEntity> meshes, Matrix4f viewMatrix) {
+        // Render each item
+        shaderProgram.setUniform("isInstanced", 0);
+        for (MeshEntity meshEntity : meshes) {
+            if (meshEntity.entity.isInsideFrustum()) {
+                shaderProgram.setUniform("modelWorldNonInstancedMatrix", transformation.buildModelViewMatrix(meshEntity.entity,
+                        viewMatrix));
+                meshEntity.mesh.render();
+            }
         }
     }
 
@@ -93,7 +125,15 @@ public class Renderer {
         // Render each item
         shaderProgram.setUniform("isInstanced", 1);
         for (Map.Entry<InstancedMesh, List<Entity>> mesh : meshes.entrySet()) {
-            mesh.getKey().renderListInstanced(mesh.getValue(), transformation, viewMatrix);
+            filteredItems.clear();
+
+            for(Entity entity : mesh.getValue()) {
+                if (entity.isInsideFrustum()) {
+                    filteredItems.add(entity);
+                }
+            }
+
+            mesh.getKey().renderListInstanced(filteredItems, transformation, viewMatrix);
         }
     }
 

@@ -154,10 +154,6 @@ public class Chunk {
     }
 
     public void addBlockAt(Block block, int x, int y, int z, boolean surface) {
-        if(blocks.containsKey(new Vector3i(x, y, z))) {
-            System.out.println("CONTAINS : " +  blocks.get(new Vector3i(x, y, z)).getBlockType() + " TO " + block
-                    .getBlockType());
-        }
         blocks.put(new Vector3i(x, y, z), block);
 
         if (surface) {

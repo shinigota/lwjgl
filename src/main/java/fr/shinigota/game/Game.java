@@ -4,18 +4,22 @@ import fr.shinigota.engine.IGameLogic;
 import fr.shinigota.engine.Window;
 import fr.shinigota.engine.graphic.texture.CubeTexture;
 import fr.shinigota.engine.graphic.texture.Texture;
-import fr.shinigota.engine.graphic.entity.MeshEntity;
 import fr.shinigota.engine.graphic.Camera;
 import fr.shinigota.engine.graphic.Skybox;
 import fr.shinigota.game.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Game implements IGameLogic {
+    public static final boolean DEBUG = true;
+
+    private static final Logger LOGGER = LogManager.getLogger(Game.class);
+
     public static final int HEIGHT = 720;
     public static final int WIDTH = 1280;
 
@@ -73,11 +77,15 @@ public class Game implements IGameLogic {
         if (controller.isKeyPressed(GLFW_KEY_D)) {
             camera.moveToDirection(Camera.Direction.RIGHT);
         }
+
+        if (Game.DEBUG) {
+            LOGGER.info(camera);
+        }
     }
 
     @Override
     public void render(Window window) {
-        renderer.renderInstanced(window, camera, world.getRenderer(), skybox);
+        renderer.render(window, camera, world.getRenderer(), skybox);
     }
 
     @Override

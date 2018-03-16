@@ -1,19 +1,20 @@
 package fr.shinigota.game.world.renderer;
 
 import fr.shinigota.engine.graphic.entity.Entity;
+import fr.shinigota.engine.graphic.entity.MeshEntity;
 import fr.shinigota.engine.graphic.mesh.CubeMesh;
 import fr.shinigota.engine.graphic.mesh.InstancedCubeMesh;
 import fr.shinigota.engine.graphic.mesh.InstancedMesh;
 import fr.shinigota.engine.graphic.mesh.Mesh;
+import fr.shinigota.engine.graphic.mesh.comparator.EntityDistanceComparator;
 import fr.shinigota.game.world.BlockMeshLoader;
 import fr.shinigota.game.world.chunk.Chunk;
 import fr.shinigota.game.world.chunk.block.Block;
 import fr.shinigota.game.world.chunk.block.BlockType;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ChunkRenderer implements Renderable {
     private final Chunk chunk;
@@ -26,6 +27,8 @@ public class ChunkRenderer implements Renderable {
     private final Map<InstancedMesh, List<Entity>> instancedOpaqueMeshes;
     private final Map<InstancedMesh, List<Entity>> instancedTransparentMeshes;
 
+    private final List<MeshEntity> sortedTransparentMeshes;
+
     public ChunkRenderer(Chunk chunk, BlockMeshLoader blockMeshLoader) {
         this.chunk = chunk;
         this.blockMeshLoader = blockMeshLoader;
@@ -35,6 +38,8 @@ public class ChunkRenderer implements Renderable {
 
         instancedOpaqueMeshes = new HashMap<>();
         instancedTransparentMeshes = new HashMap<>();
+
+        sortedTransparentMeshes = new ArrayList<>();
     }
 
     @Override
@@ -78,9 +83,9 @@ public class ChunkRenderer implements Renderable {
             }
 
             List<Block> blocks = blocksEntry.getValue();
-            if (blocks.size() >= InstancedMesh.DEFAULT_INSTANCES_NB){
-                continue;
-            }
+//            if (blocks.size() >= InstancedMesh.DEFAULT_INSTANCES_NB){
+//                continue;
+//            }
 
             for (Block block : blocks) {
                 CubeMesh blockMesh = blockMeshLoader.getTransparentMeshList().get(block.getBlockType());
@@ -145,6 +150,30 @@ public class ChunkRenderer implements Renderable {
         return instancedTransparentMeshes;
     }
 
+    @Override
+    public List<MeshEntity> getSortedTransparentMeshes(Vector3f origin) {
+        sortedTransparentMeshes.clear();
+
+        for(Map.Entry<BlockType, List<Block>> blocksEntry : chunk.getBlocksByTypes().entrySet()) {
+            if (!blocksEntry.getKey().isSemiTransparent()) {
+                continue;
+            }
+
+            List<Block> blocks = blocksEntry.getValue();
+//            if (blocks.size() >= InstancedMesh.DEFAULT_INSTANCES_NB){
+//                continue;
+//            }
+
+            for (Block block : blocks) {
+                CubeMesh blockMesh = blockMeshLoader.getTransparentMeshList().get(block.getBlockType());
+                getBlockMeshes(block, blockMesh, sortedTransparentMeshes);
+            }
+        }
+        sortedTransparentMeshes.sort(new EntityDistanceComparator(origin));
+
+        return sortedTransparentMeshes;
+    }
+
     private void getBlockMeshes(Block block, CubeMesh blockMesh, Map<Mesh, List<Entity>> targetMap) {
         Entity entity = new Entity(block.getX(), block.getY(), block.getZ());
 
@@ -171,6 +200,29 @@ public class ChunkRenderer implements Renderable {
         if (block.getVisibilityController().leftVisible()) {
             targetMap.putIfAbsent(blockMesh.left(), new ArrayList<>());
             targetMap.get(blockMesh.left()).add(entity);
+        }
+    }
+
+    private void getBlockMeshes(Block block, CubeMesh blockMesh, Collection<MeshEntity> targetCol) {
+        Entity entity = new Entity(block.getX(), block.getY(), block.getZ());
+
+        if (block.getVisibilityController().topVisible()) {
+            targetCol.add(new MeshEntity(blockMesh.up(), entity));
+        }
+        if (block.getVisibilityController().bottomVisible()) {
+            targetCol.add(new MeshEntity(blockMesh.down(), entity));
+        }
+        if (block.getVisibilityController().frontVisible()) {
+            targetCol.add(new MeshEntity(blockMesh.front(), entity));
+        }
+        if (block.getVisibilityController().backVisible()) {
+            targetCol.add(new MeshEntity(blockMesh.back(), entity));
+        }
+        if (block.getVisibilityController().rightVisible()) {
+            targetCol.add(new MeshEntity(blockMesh.right(), entity));
+        }
+        if (block.getVisibilityController().leftVisible()) {
+            targetCol.add(new MeshEntity(blockMesh.left(), entity));
         }
     }
 

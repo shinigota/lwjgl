@@ -23,8 +23,8 @@ public class PerlinGenerator implements IChunkGenerator {
         this.seed = seed;
         perlin = new Perlin();
         perlin.setSeed(seed);
-        perlin.setOctaveCount(4);
-        perlin.setFrequency(0.2);
+        perlin.setOctaveCount(2);
+        perlin.setFrequency(0.3);
     }
 
     @Override

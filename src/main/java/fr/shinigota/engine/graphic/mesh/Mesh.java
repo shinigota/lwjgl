@@ -36,6 +36,8 @@ public class Mesh {
 
     protected final List<Integer> vboIds;
 
+    private float boundingRadius;
+
     public Mesh(float[] positions, int[] indices, float[] textCoords) {
 
         this.positions = positions;
@@ -46,6 +48,8 @@ public class Mesh {
         FloatBuffer posBuffer = null;
         IntBuffer indicesBuffer = null;
         FloatBuffer textCoordsBuffer = null;
+
+        boundingRadius = 1;
 
         try {
             vertexCount = indices.length;
@@ -157,6 +161,9 @@ public class Mesh {
         initRender();
 
         for(Entity entity : entities) {
+            if (!entity.isInsideFrustum()) {
+                continue;
+            }
             consumer.accept(entity);
             glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
         }
@@ -211,4 +218,13 @@ public class Mesh {
 
         return true;
     }
+
+    public float getBoundingRadius() {
+        return boundingRadius;
+    }
+
+    public void setBoundingRadius(float boundingRadius) {
+        this.boundingRadius = boundingRadius;
+    }
+
 }

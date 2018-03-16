@@ -15,15 +15,9 @@ public class BlockVisibilityController {
     }
 
     private boolean visibleAndDifferent(Block block) {
-//        if (self.getBlockType() == BlockType.TRUNK) {
-//            System.out.println("TREE");
-//        }
 
         // self side tested is visible if block is null
         if (block == null) {
-//            if (self.getBlockType() == BlockType.TRUNK) {
-//                System.out.println("NULL");
-//            }
             return false;
         }
 
@@ -31,31 +25,19 @@ public class BlockVisibilityController {
 
         // both block solids, merge them, contact side not visible
         if ( self.getBlockType().isOpaque() && block.getBlockType().isOpaque() ) {
-//            if (self.getBlockType() == BlockType.TRUNK) {
-//                System.out.println("MERGE");
-//            }
             return false;
         }
 
         // both block liquids, merge them, contact side not visible
         if ( self.getBlockType().isLiquid() && block.getBlockType().isLiquid() ) {
-//            if (self.getBlockType() == BlockType.TRUNK) {
-//                System.out.println("LIQUID");
-//            }
             return false;
         }
 
         // self is liquid, other is solid, hide self face
         if ( self.getBlockType().isSemiTransparent() && block.getBlockType().isOpaque() ) {
-//            if (self.getBlockType() == BlockType.TRUNK) {
-//                System.out.println("TRANSP DIF");
-//            }
             return false;
         }
 
-//        if (self.getBlockType() == BlockType.TRUNK) {
-//            System.out.println("VIS");
-//        }
         return true;
     }
 

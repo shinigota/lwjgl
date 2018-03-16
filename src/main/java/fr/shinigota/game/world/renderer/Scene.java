@@ -1,11 +1,17 @@
 package fr.shinigota.game.world.renderer;
 
 import fr.shinigota.engine.graphic.entity.Entity;
+import fr.shinigota.engine.graphic.entity.MeshEntity;
+import fr.shinigota.engine.graphic.mesh.CubeMesh;
 import fr.shinigota.engine.graphic.mesh.InstancedMesh;
 import fr.shinigota.engine.graphic.mesh.Mesh;
+import fr.shinigota.engine.graphic.mesh.comparator.EntityDistanceComparator;
 import fr.shinigota.game.world.BlockMeshLoader;
 import fr.shinigota.game.world.World;
 import fr.shinigota.game.world.chunk.Chunk;
+import fr.shinigota.game.world.chunk.block.Block;
+import fr.shinigota.game.world.chunk.block.BlockType;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,15 +27,22 @@ public class Scene implements Renderable {
     private final Map<InstancedMesh, List<Entity>> instancedOpaqueMeshes;
     private final Map<InstancedMesh, List<Entity>> instancedTransparentMeshes;
 
+    private final List<MeshEntity> sortedTransparentMeshes;
+
     private final BlockMeshLoader blockMeshLoader;
+
     public Scene(World world, BlockMeshLoader blockMeshLoader) {
         this.world = world;
         this.blockMeshLoader = blockMeshLoader;
 
         opaqueMeshes = new HashMap<>();
         transparentMeshes = new HashMap<>();
+
         instancedOpaqueMeshes = new HashMap<>();
         instancedTransparentMeshes = new HashMap<>();
+
+        sortedTransparentMeshes = new ArrayList<>();
+
     }
 
     @Override
@@ -92,6 +105,19 @@ public class Scene implements Renderable {
             }
         }
         return instancedTransparentMeshes;
+    }
+
+    @Override
+    public List<MeshEntity> getSortedTransparentMeshes(Vector3f origin) {
+        sortedTransparentMeshes.clear();
+
+        for(Chunk chunk : world.getChunks().values()) {
+            sortedTransparentMeshes.addAll(chunk.getRenderer().getSortedTransparentMeshes(origin));
+        }
+
+        sortedTransparentMeshes.sort(new EntityDistanceComparator(origin));
+
+        return sortedTransparentMeshes;
     }
 
     @Override

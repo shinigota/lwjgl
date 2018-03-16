@@ -1,6 +1,5 @@
 package fr.shinigota.engine.graphic.entity;
 
-import fr.shinigota.engine.graphic.mesh.Mesh;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -8,15 +7,18 @@ public class Entity {
     private final Vector3f position;
     private final Quaternionf rotation;
     private float scale;
+    private boolean insideFrustum;
 
     public Entity() {
         this( 0, 0, 0);
     }
 
     public Entity(float x, float y, float z) {
-        scale = 1;
         position = new Vector3f(x, y, z);
         rotation = new Quaternionf();
+        scale = 1;
+        insideFrustum = false;
+
     }
 
     public Vector3f getPosition() {
@@ -52,5 +54,13 @@ public class Entity {
                 ", y=" + position.y +
                 ", z=" + position.z +
                 '}';
+    }
+
+    public void setInsideFrustum(boolean insideFrustum) {
+        this.insideFrustum = insideFrustum;
+    }
+
+    public boolean isInsideFrustum() {
+        return insideFrustum;
     }
 }

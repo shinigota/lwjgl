@@ -1,6 +1,5 @@
 package fr.shinigota.game.world.chunk.generator;
 
-import com.flowpowered.noise.module.source.Perlin;
 import fr.shinigota.game.world.chunk.Chunk;
 import fr.shinigota.game.world.chunk.block.Block;
 import fr.shinigota.game.world.chunk.block.BlockType;
